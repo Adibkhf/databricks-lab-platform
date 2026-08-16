@@ -7,6 +7,13 @@ small:
   transactions: 75000
   events: 250000
 
+  anomalies:
+    duplicate_rate: 0.02
+    null_rate: 0.01
+    invalid_rate: 0.005
+    late_event_rate: 0.05
+    skew_customer_rate: 0.20
+
 medium:
   customers: 100000
   products: 10000
@@ -16,6 +23,13 @@ medium:
   transactions: 2000000
   events: 5000000
 
+  anomalies:
+    duplicate_rate: 0.02
+    null_rate: 0.01
+    invalid_rate: 0.005
+    late_event_rate: 0.05
+    skew_customer_rate: 0.20
+
 large:
   customers: 1000000
   products: 100000
@@ -24,3 +38,10 @@ large:
   payments: 20000000
   transactions: 50000000
   events: 100000000
+
+  anomalies:
+    duplicate_rate: 0.02
+    null_rate: 0.01
+    invalid_rate: 0.005
+    late_event_rate: 0.05
+    skew_customer_rate: 0.20
