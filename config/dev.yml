@@ -1,0 +1,8 @@
+targets:
+  dev:
+    variables:
+      catalog: dbx_lab_dev
+      bronze_schema: bronze
+      silver_schema: silver
+      gold_schema: gold
+      raw_volume_path: /Volumes/dbx_lab_dev/landing/raw

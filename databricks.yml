@@ -1,0 +1,28 @@
+bundle:
+  name: databricks-lab-platform
+
+include:
+  - config/*.yml
+
+variables:
+  catalog:
+    description: Catalog cible
+
+  bronze_schema:
+    description: Schema Bronze
+
+  silver_schema:
+    description: Schema Silver
+
+  gold_schema:
+    description: Schema Gold
+
+  raw_volume_path:
+    description: Volume RAW
+
+targets:
+  dev:
+    default: true
+    mode: development
+    workspace:
+      host: https://8259550801519022.2.gcp.databricks.com

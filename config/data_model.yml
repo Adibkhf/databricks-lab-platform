@@ -1,0 +1,32 @@
+customers:
+  primary_key: customer_id
+
+products:
+  primary_key: product_id
+
+orders:
+  primary_key: order_id
+  foreign_keys:
+    customer_id: customers.customer_id
+
+order_items:
+  primary_key: order_item_id
+  foreign_keys:
+    order_id: orders.order_id
+    product_id: products.product_id
+
+payments:
+  primary_key: payment_id
+  foreign_keys:
+    order_id: orders.order_id
+
+transactions:
+  primary_key: transaction_id
+  foreign_keys:
+    payment_id: payments.payment_id
+
+events:
+  primary_key: event_id
+  foreign_keys:
+    order_id: orders.order_id
+    customer_id: customers.customer_id
