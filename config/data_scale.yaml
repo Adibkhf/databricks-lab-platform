@@ -1,0 +1,26 @@
+small:
+  customers: 10000
+  products: 1000
+  orders: 50000
+  order_items: 150000
+  payments: 50000
+  transactions: 75000
+  events: 250000
+
+medium:
+  customers: 100000
+  products: 10000
+  orders: 1000000
+  order_items: 3000000
+  payments: 1000000
+  transactions: 2000000
+  events: 5000000
+
+large:
+  customers: 1000000
+  products: 100000
+  orders: 20000000
+  order_items: 60000000
+  payments: 20000000
+  transactions: 50000000
+  events: 100000000
