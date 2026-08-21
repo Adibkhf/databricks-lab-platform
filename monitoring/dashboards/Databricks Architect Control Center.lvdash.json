@@ -1,0 +1,2178 @@
+{
+  "datasets": [
+    {
+      "name": "3a8501d3",
+      "displayName": "FinOps KPIs",
+      "config": {
+        "version": "1.1",
+        "source": "dbx_lab_dev.monitoring.finops_cost_kpis",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "5be17994",
+      "displayName": "Cost Daily",
+      "config": {
+        "version": "1.1",
+        "source": "dbx_lab_dev.monitoring.finops_cost_daily",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "429bbdd8",
+      "displayName": "Cost by SKU",
+      "config": {
+        "version": "1.1",
+        "source": "dbx_lab_dev.monitoring.finops_cost_by_sku",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "9700eaec",
+      "displayName": "Cost by Compute",
+      "config": {
+        "version": "1.1",
+        "source": "dbx_lab_dev.monitoring.finops_cost_by_compute",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "f9565507",
+      "displayName": "Cost  by Tag",
+      "config": {
+        "version": "1.1",
+        "source": "dbx_lab_dev.monitoring.finops_cost_by_tag",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "8504c028",
+      "displayName": "Cost by Job",
+      "config": {
+        "version": "1.1",
+        "source": "dbx_lab_dev.monitoring.finops_cost_by_job",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "643558b5",
+      "displayName": "Job Runs",
+      "config": {
+        "version": "1.1",
+        "source": "dbx_lab_dev.monitoring.job_runs",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "c8e5e8b3",
+      "displayName": "Job Tasks",
+      "config": {
+        "version": "1.1",
+        "source": "dbx_lab_dev.monitoring.job_tasks",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "7d05ea47",
+      "displayName": "Compute Utilization",
+      "config": {
+        "version": "1.1",
+        "source": "dbx_lab_dev.monitoring.compute_utilization",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "e0f304ee",
+      "displayName": "Cost by Compute",
+      "config": {
+        "version": "1.1",
+        "source": "dbx_lab_dev.monitoring.finops_cost_by_compute",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "e021639a",
+      "displayName": "Query Performance",
+      "config": {
+        "version": "1.1",
+        "source": "dbx_lab_dev.monitoring.query_performance",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "84bdde06",
+      "displayName": "table_selector",
+      "queryLines": [
+        "-- Liste contrôlée des tables accessibles au Table Explorer.\r\n",
+        "-- Le catalogue est volontairement fixé à dbx_lab_dev.\r\n",
+        "\r\n",
+        "SELECT\r\n",
+        "    table_schema AS schema_name,\r\n",
+        "    table_name,\r\n",
+        "    table_type\r\n",
+        "FROM dbx_lab_dev.information_schema.tables\r\n",
+        "WHERE table_schema IN (\r\n",
+        "    'bronze',\r\n",
+        "    'silver',\r\n",
+        "    'gold',\r\n",
+        "    'landing',\r\n",
+        "    'monitoring'\r\n",
+        ")\r\n",
+        "AND table_type <> 'VIEW'\r\n",
+        "ORDER BY\r\n",
+        "    schema_name,\r\n",
+        "    table_name;"
+      ]
+    },
+    {
+      "name": "74aaf04d",
+      "displayName": "n_rows_choices",
+      "queryLines": [
+        "-- Valeurs autorisées pour le preview.\r\n",
+        "\r\n",
+        "SELECT n_rows\r\n",
+        "FROM VALUES\r\n",
+        "    (10),\r\n",
+        "    (25),\r\n",
+        "    (50),\r\n",
+        "    (100)\r\n",
+        "AS choices(n_rows);"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "456695dd",
+      "displayName": "Table Selector",
+      "layout": [
+        {
+          "widget": {
+            "name": "shema",
+            "queries": [
+              {
+                "name": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19d8b7b86144a9ef8a1166c463200_schema_name",
+                "query": {
+                  "datasetName": "84bdde06",
+                  "fields": [
+                    {
+                      "name": "schema_name",
+                      "expression": "`schema_name`"
+                    },
+                    {
+                      "name": "schema_name_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "shema"
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "schema_name",
+                    "queryName": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19d8b7b86144a9ef8a1166c463200_schema_name"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "0fb8ee62",
+      "displayName": "FinOps Overview",
+      "layout": [
+        {
+          "widget": {
+            "name": "2fd44de7",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3a8501d3",
+                  "fields": [
+                    {
+                      "name": "sum(cost_today_usd)",
+                      "expression": "SUM(`cost_today_usd`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Cost Today",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(cost_today_usd)",
+                  "format": {
+                    "type": "number-currency",
+                    "abbreviation": "none",
+                    "currencyCode": "USD",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 2
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "cost-mtd",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3a8501d3",
+                  "fields": [
+                    {
+                      "name": "sum(cost_mtd_usd)",
+                      "expression": "SUM(`cost_mtd_usd`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Cost MTD"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(cost_mtd_usd)",
+                  "formatTemplate": "{{ @formatted }}",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "dbu-mt",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3a8501d3",
+                  "fields": [
+                    {
+                      "name": "sum(dbu_mtd)",
+                      "expression": "SUM(`dbu_mtd`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "DBU MTD",
+                "showDescription": false
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(dbu_mtd)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "formatTemplate": "{{ @formatted }} DBU"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "forecast-month-end",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3a8501d3",
+                  "fields": [
+                    {
+                      "name": "sum(forecast_month_end_usd)",
+                      "expression": "SUM(`forecast_month_end_usd`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Forecast Month End"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(forecast_month_end_usd)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "daily-cost-trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "5be17994",
+                  "fields": [
+                    {
+                      "name": "daily(usage_date)",
+                      "expression": "DATE_TRUNC(\"DAY\", `usage_date`)"
+                    },
+                    {
+                      "name": "sum(list_cost_usd)",
+                      "expression": "SUM(`list_cost_usd`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Daily Cost Trend"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(usage_date)",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(list_cost_usd)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "cost-by-sku",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "429bbdd8",
+                  "fields": [
+                    {
+                      "name": "sku_name",
+                      "expression": "`sku_name`"
+                    },
+                    {
+                      "name": "sum(list_cost_usd)",
+                      "expression": "SUM(`list_cost_usd`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Cost by SKU"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "sku_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(list_cost_usd)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 9,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "cost-by-compute",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "9700eaec",
+                  "fields": [
+                    {
+                      "name": "cluster_name",
+                      "expression": "`cluster_name`"
+                    },
+                    {
+                      "name": "sum(list_cost_usd)",
+                      "expression": "SUM(`list_cost_usd`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Cost by Compute"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "cluster_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(list_cost_usd)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "monitoring-finops-cost-by-tag",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "f9565507",
+                  "fields": [
+                    {
+                      "name": "tag_value",
+                      "expression": "`tag_value`"
+                    },
+                    {
+                      "name": "sum(list_cost_usd)",
+                      "expression": "SUM(`list_cost_usd`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Cost by Tag"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "tag_value",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(list_cost_usd)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "tag-type",
+            "queries": [
+              {
+                "name": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19bd04af21c1e90ad686115aa75d0_tag_key",
+                "query": {
+                  "datasetName": "f9565507",
+                  "fields": [
+                    {
+                      "name": "tag_key",
+                      "expression": "`tag_key`"
+                    },
+                    {
+                      "name": "tag_key_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Tag Type"
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "tag_key",
+                    "queryName": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19bd04af21c1e90ad686115aa75d0_tag_key"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 8,
+            "width": 6,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "d51aef24",
+      "displayName": "Jobs",
+      "layout": [
+        {
+          "widget": {
+            "name": "cost-by-job",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8504c028",
+                  "fields": [
+                    {
+                      "name": "job_name",
+                      "expression": "`job_name`"
+                    },
+                    {
+                      "name": "sum(list_cost_usd)",
+                      "expression": "SUM(`list_cost_usd`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Cost by Job"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "job_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(list_cost_usd)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "runs-by-state",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "643558b5",
+                  "fields": [
+                    {
+                      "name": "count(run_id)",
+                      "expression": "COUNT(`run_id`)"
+                    },
+                    {
+                      "name": "result_state",
+                      "expression": "`result_state`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Run Status Distribution"
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "count(run_id)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "result_state",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "f7c366ff",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "643558b5",
+                  "fields": [
+                    {
+                      "name": "count(job_name)",
+                      "expression": "COUNT(`job_name`)"
+                    },
+                    {
+                      "name": "avg(run_duration_seconds)",
+                      "expression": "AVG(`run_duration_seconds`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Average Runtime by Job"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg(run_duration_seconds)"
+                },
+                "target": {
+                  "fieldName": "count(job_name)",
+                  "style": {
+                    "fontWeight": 500,
+                    "fontStyle": "normal"
+                  },
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "22932347",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "c8e5e8b3",
+                  "fields": [
+                    {
+                      "name": "task_key",
+                      "expression": "`task_key`"
+                    },
+                    {
+                      "name": "avg(execution_duration_seconds)",
+                      "expression": "AVG(`execution_duration_seconds`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Average Task Execution Time"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "task_key",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(execution_duration_seconds)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "8bc9145d",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "643558b5",
+                  "fields": [
+                    {
+                      "name": "run_duration_seconds",
+                      "expression": "`run_duration_seconds`"
+                    },
+                    {
+                      "name": "job_name",
+                      "expression": "`job_name`"
+                    },
+                    {
+                      "name": "run_id",
+                      "expression": "`run_id`"
+                    },
+                    {
+                      "name": "run_start_time",
+                      "expression": "`run_start_time`"
+                    },
+                    {
+                      "name": "result_state",
+                      "expression": "`result_state`"
+                    },
+                    {
+                      "name": "queue_duration_seconds",
+                      "expression": "`queue_duration_seconds`"
+                    },
+                    {
+                      "name": "repair_count",
+                      "expression": "`repair_count`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Recent Runs"
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "run_duration_seconds"
+                  },
+                  {
+                    "fieldName": "job_name"
+                  },
+                  {
+                    "fieldName": "run_id"
+                  },
+                  {
+                    "fieldName": "run_start_time"
+                  },
+                  {
+                    "fieldName": "result_state"
+                  },
+                  {
+                    "fieldName": "queue_duration_seconds"
+                  },
+                  {
+                    "fieldName": "repair_count"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 12,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "feb20b0c",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "c8e5e8b3",
+                  "fields": [
+                    {
+                      "name": "job_name",
+                      "expression": "`job_name`"
+                    },
+                    {
+                      "name": "job_run_id",
+                      "expression": "`job_run_id`"
+                    },
+                    {
+                      "name": "task_key",
+                      "expression": "`task_key`"
+                    },
+                    {
+                      "name": "task_start_time",
+                      "expression": "`task_start_time`"
+                    },
+                    {
+                      "name": "result_state",
+                      "expression": "`result_state`"
+                    },
+                    {
+                      "name": "termination_code",
+                      "expression": "`termination_code`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Task Execution Details"
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "job_name"
+                  },
+                  {
+                    "fieldName": "job_run_id"
+                  },
+                  {
+                    "fieldName": "task_key"
+                  },
+                  {
+                    "fieldName": "task_start_time"
+                  },
+                  {
+                    "fieldName": "result_state"
+                  },
+                  {
+                    "fieldName": "termination_code"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 15,
+            "width": 12,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "d30e1986",
+      "displayName": "Compute",
+      "layout": [
+        {
+          "widget": {
+            "name": "cost-by-compute",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "9700eaec",
+                  "fields": [
+                    {
+                      "name": "cluster_name",
+                      "expression": "`cluster_name`"
+                    },
+                    {
+                      "name": "sum(list_cost_usd)",
+                      "expression": "SUM(`list_cost_usd`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Cost by Compute"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "cluster_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(list_cost_usd)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 0,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "cpu-utilization",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "7d05ea47",
+                  "fields": [
+                    {
+                      "name": "cluster_name",
+                      "expression": "`cluster_name`"
+                    },
+                    {
+                      "name": "daily(metric_time)",
+                      "expression": "DATE_TRUNC(\"DAY\", `metric_time`)"
+                    },
+                    {
+                      "name": "avg(avg_cpu_percent)",
+                      "expression": "AVG(`avg_cpu_percent`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "showDescription": false,
+                "title": "CPU Utilization"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(metric_time)",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(avg_cpu_percent)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "cluster_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "b4a73347",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "7d05ea47",
+                  "fields": [
+                    {
+                      "name": "cluster_name",
+                      "expression": "`cluster_name`"
+                    },
+                    {
+                      "name": "metric_time",
+                      "expression": "`metric_time`"
+                    },
+                    {
+                      "name": "avg(avg_memory_percent)",
+                      "expression": "AVG(`avg_memory_percent`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Memory Utilization",
+                "showDescription": false
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "metric_time",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(avg_memory_percent)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "cluster_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 6,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "b90f9c43",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "7d05ea47",
+                  "fields": [
+                    {
+                      "name": "cluster_name",
+                      "expression": "`cluster_name`"
+                    },
+                    {
+                      "name": "daily(metric_time)",
+                      "expression": "DATE_TRUNC(\"DAY\", `metric_time`)"
+                    },
+                    {
+                      "name": "avg(avg_cpu_wait_percent)",
+                      "expression": "AVG(`avg_cpu_wait_percent`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "CPU Wait",
+                "showDescription": false
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(metric_time)",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(avg_cpu_wait_percent)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "cluster_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "driver-vs-worker-cpu",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "7d05ea47",
+                  "fields": [
+                    {
+                      "name": "metric_time",
+                      "expression": "`metric_time`"
+                    },
+                    {
+                      "name": "avg(avg_driver_cpu_percent)",
+                      "expression": "AVG(`avg_driver_cpu_percent`)"
+                    },
+                    {
+                      "name": "avg(avg_worker_cpu_percent)",
+                      "expression": "AVG(`avg_worker_cpu_percent`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "showDescription": false,
+                "title": "Driver vs Worker CPU"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "metric_time",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "fields": [
+                    {
+                      "fieldName": "avg(avg_driver_cpu_percent)"
+                    },
+                    {
+                      "fieldName": "avg(avg_worker_cpu_percent)"
+                    }
+                  ]
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 13,
+            "width": 9,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "bbbf7e5d",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "7d05ea47",
+                  "fields": [
+                    {
+                      "name": "cluster_name",
+                      "expression": "`cluster_name`"
+                    },
+                    {
+                      "name": "metric_time",
+                      "expression": "`metric_time`"
+                    },
+                    {
+                      "name": "node_count",
+                      "expression": "`node_count`"
+                    },
+                    {
+                      "name": "avg_cpu_percent",
+                      "expression": "`avg_cpu_percent`"
+                    },
+                    {
+                      "name": "max_cpu_percent",
+                      "expression": "`max_cpu_percent`"
+                    },
+                    {
+                      "name": "avg_cpu_wait_percent",
+                      "expression": "`avg_cpu_wait_percent`"
+                    },
+                    {
+                      "name": "avg_memory_percent",
+                      "expression": "`avg_memory_percent`"
+                    },
+                    {
+                      "name": "max_memory_percent",
+                      "expression": "`max_memory_percent`"
+                    },
+                    {
+                      "name": "avg_driver_cpu_percent",
+                      "expression": "`avg_driver_cpu_percent`"
+                    },
+                    {
+                      "name": "avg_worker_cpu_percent",
+                      "expression": "`avg_worker_cpu_percent`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "cluster_name"
+                  },
+                  {
+                    "fieldName": "metric_time"
+                  },
+                  {
+                    "fieldName": "node_count"
+                  },
+                  {
+                    "fieldName": "avg_cpu_percent"
+                  },
+                  {
+                    "fieldName": "max_cpu_percent"
+                  },
+                  {
+                    "fieldName": "avg_cpu_wait_percent"
+                  },
+                  {
+                    "fieldName": "avg_memory_percent"
+                  },
+                  {
+                    "fieldName": "max_memory_percent"
+                  },
+                  {
+                    "fieldName": "avg_driver_cpu_percent"
+                  },
+                  {
+                    "fieldName": "avg_worker_cpu_percent"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 19,
+            "width": 11,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "cluster",
+            "queries": [
+              {
+                "name": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19bd580ba1ef7861245585088a223_cluster_name",
+                "query": {
+                  "datasetName": "7d05ea47",
+                  "fields": [
+                    {
+                      "name": "cluster_name",
+                      "expression": "`cluster_name`"
+                    },
+                    {
+                      "name": "cluster_name_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Cluster"
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "cluster_name",
+                    "queryName": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19bd580ba1ef7861245585088a223_cluster_name"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 12,
+            "width": 4,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "d277ebca",
+      "displayName": "Query Performance",
+      "layout": [
+        {
+          "widget": {
+            "name": "query-duration-trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "e021639a",
+                  "fields": [
+                    {
+                      "name": "start_time",
+                      "expression": "`start_time`"
+                    },
+                    {
+                      "name": "avg(total_duration_ms)",
+                      "expression": "AVG(`total_duration_ms`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Query Duration Trend"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "start_time",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(total_duration_ms)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "average-duration-by-statement-type",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "e021639a",
+                  "fields": [
+                    {
+                      "name": "statement_type",
+                      "expression": "`statement_type`"
+                    },
+                    {
+                      "name": "avg(total_duration_ms)",
+                      "expression": "AVG(`total_duration_ms`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Average Duration by Statement Type"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "statement_type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(total_duration_ms)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "avg-waiting-time",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "e021639a",
+                  "fields": [
+                    {
+                      "name": "statement_type",
+                      "expression": "`statement_type`"
+                    },
+                    {
+                      "name": "sum(total_waiting_duration_ms)",
+                      "expression": "SUM(`total_waiting_duration_ms`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Average Waiting Time"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "statement_type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_waiting_duration_ms)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "local-disk-spill",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "e021639a",
+                  "fields": [
+                    {
+                      "name": "statement_type",
+                      "expression": "`statement_type`"
+                    },
+                    {
+                      "name": "sum(spilled_local_bytes)",
+                      "expression": "SUM(`spilled_local_bytes`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Local Disk Spill"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "statement_type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(spilled_local_bytes)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "shuffle-read-statement-type",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "e021639a",
+                  "fields": [
+                    {
+                      "name": "statement_type",
+                      "expression": "`statement_type`"
+                    },
+                    {
+                      "name": "sum(shuffle_read_bytes)",
+                      "expression": "SUM(`shuffle_read_bytes`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Shuffle Read by Statement Type"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "statement_type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(shuffle_read_bytes)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "slowest-queries",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "e021639a",
+                  "fields": [
+                    {
+                      "name": "start_time",
+                      "expression": "`start_time`"
+                    },
+                    {
+                      "name": "statement_id",
+                      "expression": "`statement_id`"
+                    },
+                    {
+                      "name": "statement_type",
+                      "expression": "`statement_type`"
+                    },
+                    {
+                      "name": "execution_status",
+                      "expression": "`execution_status`"
+                    },
+                    {
+                      "name": "executed_by",
+                      "expression": "`executed_by`"
+                    },
+                    {
+                      "name": "total_duration_ms",
+                      "expression": "`total_duration_ms`"
+                    },
+                    {
+                      "name": "total_waiting_duration_ms",
+                      "expression": "`total_waiting_duration_ms`"
+                    },
+                    {
+                      "name": "execution_duration_ms",
+                      "expression": "`execution_duration_ms`"
+                    },
+                    {
+                      "name": "read_bytes",
+                      "expression": "`read_bytes`"
+                    },
+                    {
+                      "name": "shuffle_read_bytes",
+                      "expression": "`shuffle_read_bytes`"
+                    },
+                    {
+                      "name": "spilled_local_bytes",
+                      "expression": "`spilled_local_bytes`"
+                    },
+                    {
+                      "name": "statement_preview",
+                      "expression": "`statement_preview`"
+                    }
+                  ],
+                  "disaggregated": true,
+                  "orders": [
+                    {
+                      "direction": "DESC",
+                      "expression": "`total_duration_ms`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Slowest Queries"
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "start_time"
+                  },
+                  {
+                    "fieldName": "statement_id"
+                  },
+                  {
+                    "fieldName": "statement_type"
+                  },
+                  {
+                    "fieldName": "execution_status"
+                  },
+                  {
+                    "fieldName": "executed_by"
+                  },
+                  {
+                    "fieldName": "total_duration_ms"
+                  },
+                  {
+                    "fieldName": "total_waiting_duration_ms"
+                  },
+                  {
+                    "fieldName": "execution_duration_ms"
+                  },
+                  {
+                    "fieldName": "read_bytes"
+                  },
+                  {
+                    "fieldName": "shuffle_read_bytes"
+                  },
+                  {
+                    "fieldName": "spilled_local_bytes"
+                  },
+                  {
+                    "fieldName": "statement_preview"
+                  }
+                ],
+                "rowOrder": [
+                  {
+                    "by": "column-reversed",
+                    "field": {
+                      "index": 5
+                    }
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 17,
+            "width": 12,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "statement-type1",
+            "queries": [
+              {
+                "name": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19bf740581711975bf8b16f65c80b_statement_type",
+                "query": {
+                  "datasetName": "e021639a",
+                  "fields": [
+                    {
+                      "name": "statement_type",
+                      "expression": "`statement_type`"
+                    },
+                    {
+                      "name": "statement_type_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Statement Type"
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "statement_type",
+                    "queryName": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19bf740581711975bf8b16f65c80b_statement_type"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 21,
+            "width": 4,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "a024d698",
+      "displayName": "Security",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "a3c52ab1",
+      "displayName": "Global Filters",
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "86a7332e",
+      "displayName": "Lineage",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}

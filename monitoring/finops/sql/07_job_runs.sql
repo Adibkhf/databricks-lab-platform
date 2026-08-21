@@ -1,13 +1,12 @@
--- system.lakeflow.job_run_timeline contient l'historique des exécutions de Jobs.
--- Un run de plus d'une heure peut être découpé en plusieurs lignes temporelles.
--- On regroupe donc par run_id afin d'obtenir UNE ligne finale par exécution.
+-- system.lakeflow.job_run_timeline peut contenir plusieurs lignes pour un même run.
+-- Pour les jobs multi-tasks, les colonnes run_duration_seconds / queue_duration_seconds
+-- de cette table valent 0. On calcule donc nous-mêmes la durée réelle du run.
 
 CREATE OR REPLACE VIEW dbx_lab_dev.monitoring.job_runs AS
 
 WITH latest_jobs AS (
 
-    -- system.lakeflow.jobs est SCD2 :
-    -- on récupère uniquement la configuration actuelle de chaque Job.
+    -- Récupère la configuration actuelle de chaque Job.
     SELECT
         workspace_id,
         job_id,
@@ -39,22 +38,21 @@ runs AS (
         MAX(run_type) AS run_type,
         MAX(run_name) AS run_name,
 
-        -- result_state et termination_code sont notamment renseignés
-        -- sur la ligne représentant la fin du run.
         MAX(result_state) AS result_state,
         MAX(termination_code) AS termination_code,
         MAX(termination_type) AS termination_type,
 
+        -- Durée réelle du run calculée à partir des périodes de timeline.
+        CAST(
+            SUM(period_end_time - period_start_time) AS LONG
+        ) AS run_duration_seconds,
+
+        -- Ces métriques peuvent valoir 0 pour les jobs multi-tasks.
         MAX(setup_duration_seconds) AS setup_duration_seconds,
         MAX(queue_duration_seconds) AS queue_duration_seconds,
         MAX(execution_duration_seconds) AS execution_duration_seconds,
         MAX(cleanup_duration_seconds) AS cleanup_duration_seconds,
 
-        -- Valeur fournie directement par Databricks lorsque disponible.
-        MAX(run_duration_seconds) AS reported_run_duration_seconds,
-
-        -- Plusieurs états finaux pour le même run peuvent indiquer
-        -- une réparation/reprise du run.
         GREATEST(
             COUNT_IF(result_state IS NOT NULL) - 1,
             0
@@ -92,11 +90,7 @@ SELECT
     runs.execution_duration_seconds,
     runs.cleanup_duration_seconds,
 
-    -- Fallback calculé au cas où run_duration_seconds n'est pas renseigné.
-    COALESCE(
-        runs.reported_run_duration_seconds,
-        UNIX_TIMESTAMP(runs.run_end_time) - UNIX_TIMESTAMP(runs.run_start_time)
-    ) AS run_duration_seconds,
+    runs.run_duration_seconds,
 
     runs.repair_count,
 
