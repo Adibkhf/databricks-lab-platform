@@ -71,7 +71,7 @@ def test_clean_orders_valid_and_invalid_rows(spark, monkeypatch):
     invalid_df = result["invalid_df"]
 
     # Une seule ligne doit passer les contrôles.
-    assert valid_df.count() == 99
+    assert valid_df.count() == 1
 
     # Deux lignes doivent partir en quarantaine.
     assert invalid_df.count() == 2
