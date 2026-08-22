@@ -270,6 +270,128 @@
         "    (100)\r\n",
         "AS choices(n_rows);"
       ]
+    },
+    {
+      "name": "b252a19c",
+      "displayName": "table_kpis",
+      "queryLines": [
+        "-- ============================================================\r\n",
+        "-- TABLE HEALTH - KPIs\r\n",
+        "-- ============================================================\r\n",
+        "-- :schema et :table seront alimentés par les contrôles\r\n",
+        "-- du dashboard.\r\n",
+        "-- Le catalogue reste volontairement fixe.\r\n",
+        "\r\n",
+        "WITH row_count AS (\r\n",
+        "\r\n",
+        "    SELECT\r\n",
+        "        COUNT(*) AS row_count\r\n",
+        "    FROM IDENTIFIER(\r\n",
+        "        'dbx_lab_dev.' || :schema || '.' || :table\r\n",
+        "    )\r\n",
+        "\r\n",
+        "),\r\n",
+        "\r\n",
+        "uc_metadata AS (\r\n",
+        "\r\n",
+        "    SELECT\r\n",
+        "        last_altered\r\n",
+        "    FROM dbx_lab_dev.information_schema.tables\r\n",
+        "    WHERE table_schema = :schema\r\n",
+        "      AND table_name = :table\r\n",
+        "\r\n",
+        "),\r\n",
+        "\r\n",
+        "delta_detail AS (\r\n",
+        "\r\n",
+        "    SELECT\r\n",
+        "        size_in_bytes,\r\n",
+        "        num_files,\r\n",
+        "        last_modified\r\n",
+        "    FROM dbx_lab_dev.monitoring.table_health_delta_detail\r\n",
+        "    WHERE catalog_name = 'dbx_lab_dev'\r\n",
+        "      AND schema_name = :schema\r\n",
+        "      AND table_name = :table\r\n",
+        "\r\n",
+        ")\r\n",
+        "\r\n",
+        "SELECT\r\n",
+        "\r\n",
+        "    r.row_count,\r\n",
+        "\r\n",
+        "    d.size_in_bytes,\r\n",
+        "\r\n",
+        "    CASE\r\n",
+        "        WHEN d.size_in_bytes >= 1073741824\r\n",
+        "            THEN CONCAT(\r\n",
+        "                ROUND(d.size_in_bytes / 1073741824.0, 2),\r\n",
+        "                ' GB'\r\n",
+        "            )\r\n",
+        "\r\n",
+        "        WHEN d.size_in_bytes >= 1048576\r\n",
+        "            THEN CONCAT(\r\n",
+        "                ROUND(d.size_in_bytes / 1048576.0, 2),\r\n",
+        "                ' MB'\r\n",
+        "            )\r\n",
+        "\r\n",
+        "        WHEN d.size_in_bytes >= 1024\r\n",
+        "            THEN CONCAT(\r\n",
+        "                ROUND(d.size_in_bytes / 1024.0, 2),\r\n",
+        "                ' KB'\r\n",
+        "            )\r\n",
+        "\r\n",
+        "        WHEN d.size_in_bytes IS NOT NULL\r\n",
+        "            THEN CONCAT(d.size_in_bytes, ' B')\r\n",
+        "\r\n",
+        "        ELSE 'N/A'\r\n",
+        "    END AS table_size,\r\n",
+        "\r\n",
+        "    d.num_files,\r\n",
+        "\r\n",
+        "    COALESCE(\r\n",
+        "        d.last_modified,\r\n",
+        "        m.last_altered\r\n",
+        "    ) AS last_modified\r\n",
+        "\r\n",
+        "FROM row_count r\r\n",
+        "CROSS JOIN uc_metadata m\r\n",
+        "LEFT JOIN delta_detail d\r\n",
+        "    ON TRUE;"
+      ],
+      "parameters": [
+        {
+          "displayName": "schema",
+          "keyword": "schema",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "silver"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "table",
+          "keyword": "table",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "orders_clean"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "catalog": "dbx_lab_dev",
+      "schema": "silver"
     }
   ],
   "pages": [
@@ -282,17 +404,30 @@
             "name": "shema",
             "queries": [
               {
-                "name": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19d8b7b86144a9ef8a1166c463200_schema_name",
+                "name": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19d8b7b86144a9ef8a1166c463200_table_name",
                 "query": {
                   "datasetName": "84bdde06",
                   "fields": [
                     {
-                      "name": "schema_name",
-                      "expression": "`schema_name`"
+                      "name": "table_name",
+                      "expression": "`table_name`"
                     },
                     {
-                      "name": "schema_name_associativity",
+                      "name": "table_name_associativity",
                       "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19d8eea131694960077fae4cac7ff_table",
+                "query": {
+                  "datasetName": "b252a19c",
+                  "parameters": [
+                    {
+                      "name": "table",
+                      "keyword": "table"
                     }
                   ],
                   "disaggregated": false
@@ -309,8 +444,12 @@
               "encodings": {
                 "fields": [
                   {
-                    "fieldName": "schema_name",
-                    "queryName": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19d8b7b86144a9ef8a1166c463200_schema_name"
+                    "fieldName": "table_name",
+                    "queryName": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19d8b7b86144a9ef8a1166c463200_table_name"
+                  },
+                  {
+                    "parameterName": "table",
+                    "queryName": "parameter_dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19d8eea131694960077fae4cac7ff_table"
                   }
                 ]
               }
@@ -319,8 +458,126 @@
           "position": {
             "x": 0,
             "y": 0,
-            "width": 4,
+            "width": 3,
             "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "row-co",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b252a19c",
+                  "fields": [
+                    {
+                      "name": "sum(row_count)",
+                      "expression": "SUM(`row_count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Row Count"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(row_count)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "50595d68",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b252a19c",
+                  "fields": [
+                    {
+                      "name": "table_size",
+                      "expression": "`table_size`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "table_size"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "98bcfd2c",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b252a19c",
+                  "fields": [
+                    {
+                      "name": "sum(num_files)",
+                      "expression": "SUM(`num_files`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(num_files)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 0,
+            "width": 3,
+            "height": 2
           }
         }
       ],
