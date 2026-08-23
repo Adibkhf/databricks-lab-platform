@@ -1,7 +1,8 @@
 # Scenario 007 — File Contract Validation & Quarantine
 
-## Objectif
+![Scenario 007 — File Contract Validation & Quarantine](./scenario_007.png)
 
+## Objectif
 Empêcher un fichier dont le chemin ne respecte pas le contrat de landing d'entrer dans la table Bronze principale.
 
 ## Architecture
