@@ -1,0 +1,98 @@
+resources:
+  jobs:
+    ecommerce_dev_pipeline:
+      name: ecommerce-dev-pipeline
+
+      email_notifications:
+        on_failure:
+          - ad.khaffaji@gmail.com
+
+      notification_settings:
+        no_alert_for_canceled_runs: true
+
+      tasks:
+        - task_key: bronze_ingestion
+          spark_python_task:
+            python_file: ../src/ingestion/bronze_order.py
+          job_cluster_key: Job_cluster
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: true
+
+        - task_key: silver_clean
+          depends_on:
+            - task_key: bronze_ingestion
+          spark_python_task:
+            python_file: ../src/silver/clean_orders.py
+          job_cluster_key: Job_cluster
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: true
+
+        - task_key: silver_deduplicate
+          depends_on:
+            - task_key: silver_clean
+          spark_python_task:
+            python_file: ../src/silver/deduplicate_orders.py
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: true
+          disable_auto_optimization: false
+          environment_key: Default
+
+        - task_key: silver_merge
+          depends_on:
+            - task_key: silver_deduplicate
+          spark_python_task:
+            python_file: ../src/silver/merge_orders.py
+          job_cluster_key: Job_cluster
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: true
+
+        - task_key: silver_cdc
+          depends_on:
+            - task_key: silver_merge
+          spark_python_task:
+            python_file: ../src/silver/apply_orders_cdc.py
+          job_cluster_key: Job_cluster
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: true
+
+        - task_key: gold_orders_daily
+          depends_on:
+            - task_key: silver_cdc
+          spark_python_task:
+            python_file: ../src/gold/build_orders_daily.py
+          job_cluster_key: Job_cluster
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: true
+
+      job_clusters:
+        - job_cluster_key: Job_cluster
+          new_cluster:
+            cluster_name: ""
+            spark_version: 17.3.x-scala2.13
+            gcp_attributes:
+              use_preemptible_executors: false
+              zone_id: HA
+            node_type_id: n2-highmem-4
+            spark_env_vars:
+              PYSPARK_PYTHON: /databricks/python3/bin/python3
+            enable_elastic_disk: false
+            data_security_mode: DATA_SECURITY_MODE_AUTO
+            runtime_engine: STANDARD
+            kind: CLASSIC_PREVIEW
+            is_single_node: true
+
+      queue:
+        enabled: true
+
+      environments:
+        - environment_key: Default
+          spec:
+            environment_version: "5"
+
+      performance_target: PERFORMANCE_OPTIMIZED
