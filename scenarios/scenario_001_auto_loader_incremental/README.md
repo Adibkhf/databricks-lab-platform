@@ -1,5 +1,5 @@
 # Scenario 001 — Auto Loader : ingestion incrémentale
-
+![Scenario 001 — Auto Loader : ingestion incrémentale](./scenario_001.png)
 ## Objectif
 
 Vérifier qu'un pipeline Databricks Auto Loader ingère uniquement les nouveaux fichiers déposés dans GCS sans retraiter les fichiers déjà connus.
