@@ -404,16 +404,16 @@
             "name": "shema",
             "queries": [
               {
-                "name": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19d8b7b86144a9ef8a1166c463200_table_name",
+                "name": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19e16037913b49a4b057e5d47ae4e_schema_name",
                 "query": {
                   "datasetName": "84bdde06",
                   "fields": [
                     {
-                      "name": "table_name",
-                      "expression": "`table_name`"
+                      "name": "schema_name",
+                      "expression": "`schema_name`"
                     },
                     {
-                      "name": "table_name_associativity",
+                      "name": "schema_name_associativity",
                       "expression": "COUNT_IF(`associative_filter_predicate_group`)"
                     }
                   ],
@@ -421,13 +421,13 @@
                 }
               },
               {
-                "name": "parameter_dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19d8eea131694960077fae4cac7ff_table",
+                "name": "parameter_dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19e16037913bbafa603e7b3ec2f48_schema",
                 "query": {
                   "datasetName": "b252a19c",
                   "parameters": [
                     {
-                      "name": "table",
-                      "keyword": "table"
+                      "name": "schema",
+                      "keyword": "schema"
                     }
                   ],
                   "disaggregated": false
@@ -444,12 +444,12 @@
               "encodings": {
                 "fields": [
                   {
-                    "fieldName": "table_name",
-                    "queryName": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19d8b7b86144a9ef8a1166c463200_table_name"
+                    "fieldName": "schema_name",
+                    "queryName": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19e16037913b49a4b057e5d47ae4e_schema_name"
                   },
                   {
-                    "parameterName": "table",
-                    "queryName": "parameter_dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19d8eea131694960077fae4cac7ff_table"
+                    "parameterName": "schema",
+                    "queryName": "parameter_dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19e16037913bbafa603e7b3ec2f48_schema"
                   }
                 ]
               }
@@ -578,6 +578,69 @@
             "y": 0,
             "width": 3,
             "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "d4ef6d85",
+            "queries": [
+              {
+                "name": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19e16037913b49a4b057e5d47ae4e_table_name",
+                "query": {
+                  "datasetName": "84bdde06",
+                  "fields": [
+                    {
+                      "name": "table_name",
+                      "expression": "`table_name`"
+                    },
+                    {
+                      "name": "table_name_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19e16037913bbafa603e7b3ec2f48_table",
+                "query": {
+                  "datasetName": "b252a19c",
+                  "parameters": [
+                    {
+                      "name": "table",
+                      "keyword": "table"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Table"
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "table_name",
+                    "queryName": "dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19e16037913b49a4b057e5d47ae4e_table_name"
+                  },
+                  {
+                    "parameterName": "table",
+                    "queryName": "parameter_dashboards/01f19b2b9aad1a13aac1d610ac131cd9/datasets/01f19e16037913bbafa603e7b3ec2f48_table"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 3,
+            "height": 1
           }
         }
       ],
