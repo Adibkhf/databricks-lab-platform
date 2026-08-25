@@ -1,10 +1,10 @@
-﻿# Scenario 006 â€” Auto Loader & Delta Schema Evolution
+﻿# Scenario 006 Auto Loader & Delta Schema Evolution
 
-![Auto Loader and Delta Schema Evolution](./images/scenario_006.png)
+![Auto Loader and Delta Schema Evolution](./scenario_006.png)
 
 ## Objectif
 
-Comprendre et sÃ©curiser l'arrivÃ©e d'une nouvelle colonne dans les fichiers RAW ingÃ©rÃ©s avec Databricks Auto Loader.
+Comprendre et et securier l'arrivée d'une nouvelle colonne dans les fichiers RAW ingeres avec Databricks Auto Loader.
 
 Le scÃ©nario distingue deux mÃ©canismes diffÃ©rents :
 
