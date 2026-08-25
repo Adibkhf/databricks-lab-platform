@@ -8,8 +8,8 @@ Comprendre et et securier l'arrivée d'une nouvelle colonne dans les fichiers RA
 
 Le scÃ©nario distingue deux mÃ©canismes diffÃ©rents :
 
-1. l'Ã©volution du schÃ©ma d'entrÃ©e gÃ©rÃ©e par Auto Loader ;
-2. l'Ã©volution du schÃ©ma des tables Delta cibles.
+1. l'Ã©volution du schema d'entree genere par Auto Loader ;
+2. l'Ã©volution du schema des tables Delta cibles.
 
 ## Situation initiale
 
@@ -47,11 +47,11 @@ flowchart LR
 
 ## Incident observÃ©
 
-Lors de l'arrivÃ©e de `channel`, Auto Loader a d'abord retournÃ© :
+Lors de l'arrivee de `channel`, Auto Loader a d'abord retourne :
 
 `UNKNOWN_FIELD_EXCEPTION.NEW_FIELDS_IN_FILE`
 
-Le nouveau schÃ©ma a ensuite Ã©tÃ© enregistrÃ© dans :
+Le nouveau schema a ensuite ete enregistre dans :
 
 `/Volumes/dbx_lab_dev/landing/raw/_schemas/bronze_orders`
 
