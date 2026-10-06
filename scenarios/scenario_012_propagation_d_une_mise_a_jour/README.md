@@ -162,7 +162,7 @@ Les compteurs viennent des métriques Delta. Les assertions vérifient aussi les
 
 Ces durées concernent l'appel MERGE sur trois clients, hors préparation des tables et contrôles. Elles ne constituent pas un benchmark à grand volume.
 
-## Point Tech Lead
+## Point à retenir
 
 - Le nombre de lignes et le succès du job ne suffisent pas à valider une mise à jour métier.
 - La sélection de la dernière version dans le lot et la comparaison avec la version cible sont deux contrôles différents.

@@ -1,0 +1,146 @@
+{
+  "scenario": "013",
+  "source_table": "dbx_lab_dev.bronze.scenario_013_payments_cdc",
+  "target_table": "dbx_lab_dev.silver.scenario_013_payments_current",
+  "gold_table": "dbx_lab_dev.gold.scenario_013_payments_daily",
+  "audit_table": "dbx_lab_dev.bronze.scenario_013_delete_audit",
+  "unconditional_delete": {
+    "deleted_rows": 2,
+    "updated_rows": 0,
+    "inserted_rows": 0,
+    "duration_seconds": 8.82
+  },
+  "first_run": {
+    "deleted_rows": 1,
+    "updated_rows": 0,
+    "inserted_rows": 0,
+    "duration_seconds": 4.684
+  },
+  "replay": {
+    "deleted_rows": 0,
+    "updated_rows": 0,
+    "inserted_rows": 0,
+    "duration_seconds": 3.965
+  },
+  "silver_before": [
+    {
+      "payment_id": 980001,
+      "payment_date": "2026-10-06",
+      "amount": "100.00",
+      "status": "accepted",
+      "sequence_num": 1,
+      "_applied_at": "2026-01-01 08:00:00"
+    },
+    {
+      "payment_id": 980002,
+      "payment_date": "2026-10-06",
+      "amount": "50.00",
+      "status": "accepted",
+      "sequence_num": 3,
+      "_applied_at": "2026-01-01 08:00:00"
+    },
+    {
+      "payment_id": 980003,
+      "payment_date": "2026-10-06",
+      "amount": "30.00",
+      "status": "accepted",
+      "sequence_num": 1,
+      "_applied_at": "2026-01-01 08:00:00"
+    }
+  ],
+  "silver_wrong_delete": [
+    {
+      "payment_id": 980003,
+      "payment_date": "2026-10-06",
+      "amount": "30.00",
+      "status": "accepted",
+      "sequence_num": 1,
+      "_applied_at": "2026-01-01 08:00:00"
+    }
+  ],
+  "silver_after": [
+    {
+      "payment_id": 980002,
+      "payment_date": "2026-10-06",
+      "amount": "50.00",
+      "status": "accepted",
+      "sequence_num": 3,
+      "_applied_at": "2026-01-01 08:00:00"
+    },
+    {
+      "payment_id": 980003,
+      "payment_date": "2026-10-06",
+      "amount": "30.00",
+      "status": "accepted",
+      "sequence_num": 1,
+      "_applied_at": "2026-01-01 08:00:00"
+    }
+  ],
+  "gold_before": [
+    {
+      "payment_date": "2026-10-06",
+      "status": "accepted",
+      "payment_count": 3,
+      "payment_total": "180.00"
+    }
+  ],
+  "gold_wrong_delete": [
+    {
+      "payment_date": "2026-10-06",
+      "status": "accepted",
+      "payment_count": 1,
+      "payment_total": "30.00"
+    }
+  ],
+  "gold_after": [
+    {
+      "payment_date": "2026-10-06",
+      "status": "accepted",
+      "payment_count": 2,
+      "payment_total": "80.00"
+    }
+  ],
+  "audit": [
+    {
+      "event_id": "delete_001",
+      "payment_id": 980001,
+      "sequence_num": 2,
+      "pass_name": "first_run",
+      "outcome": "DELETED",
+      "_audited_at": "2026-10-06 10:27:09.077614"
+    },
+    {
+      "event_id": "delete_002",
+      "payment_id": 980002,
+      "sequence_num": 2,
+      "pass_name": "first_run",
+      "outcome": "IGNORED_VERSION",
+      "_audited_at": "2026-10-06 10:27:09.077614"
+    },
+    {
+      "event_id": "delete_001",
+      "payment_id": 980001,
+      "sequence_num": 2,
+      "pass_name": "replay",
+      "outcome": "ALREADY_ABSENT",
+      "_audited_at": "2026-10-06 10:27:21.283263"
+    },
+    {
+      "event_id": "delete_002",
+      "payment_id": 980002,
+      "sequence_num": 2,
+      "pass_name": "replay",
+      "outcome": "IGNORED_VERSION",
+      "_audited_at": "2026-10-06 10:27:21.283263"
+    }
+  ],
+  "checks": {
+    "stale_delete_ignored": true,
+    "survivors_unchanged": true,
+    "gold_reconciled": true,
+    "replay_unchanged": true
+  },
+  "run_url": "https://8259550801519022.2.gcp.databricks.com/?o=8259550801519022#job/1101036191636198/run/424630296570875",
+  "executed_at_utc": "2026-10-06T10:27:44.8430666Z",
+  "code_sha256": "6649f8d965cca3212f74719532aee2d9c0070b473012ee6297e53ff1e9940cb4"
+}
