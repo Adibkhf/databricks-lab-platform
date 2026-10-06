@@ -1,0 +1,179 @@
+{
+  "scenario": "014",
+  "execution_mode": "controlled_batch",
+  "source_table": "dbx_lab_dev.bronze.scenario_014_transactions_cdc",
+  "state_table": "dbx_lab_dev.silver.scenario_014_transactions_state",
+  "current_view": "dbx_lab_dev.silver.scenario_014_transactions_current",
+  "gold_table": "dbx_lab_dev.gold.scenario_014_transactions_summary",
+  "preparation": {
+    "source_rows": 7,
+    "distinct_versions": 6,
+    "keys_after_selection": 4
+  },
+  "physical_first": {
+    "inserted_rows": 1,
+    "updated_rows": 2,
+    "deleted_rows": 1,
+    "duration_seconds": 11.125
+  },
+  "physical_old_insert": {
+    "inserted_rows": 1,
+    "updated_rows": 0,
+    "deleted_rows": 0,
+    "duration_seconds": 5.059
+  },
+  "wrong_state": [
+    {
+      "transaction_id": 990001,
+      "payment_id": 1001,
+      "amount": "120.00",
+      "sequence_num": 3,
+      "_is_deleted": false,
+      "_applied_at": "2026-10-06 12:24:12.396107"
+    },
+    {
+      "transaction_id": 990002,
+      "payment_id": 1002,
+      "amount": "50.00",
+      "sequence_num": 1,
+      "_is_deleted": false,
+      "_applied_at": "2026-10-06 12:24:28.817667"
+    },
+    {
+      "transaction_id": 990003,
+      "payment_id": 1003,
+      "amount": "30.00",
+      "sequence_num": 1,
+      "_is_deleted": false,
+      "_applied_at": "2026-10-06 12:24:12.396107"
+    },
+    {
+      "transaction_id": 990004,
+      "payment_id": 1004,
+      "amount": "40.00",
+      "sequence_num": 1,
+      "_is_deleted": false,
+      "_applied_at": "2026-10-06 12:24:12.396107"
+    }
+  ],
+  "wrong_gold": {
+    "transaction_count": 4,
+    "total_amount": "240.00"
+  },
+  "first_run": {
+    "delta": {
+      "inserted_rows": 1,
+      "updated_rows": 2,
+      "deleted_rows": 0,
+      "duration_seconds": 6.709
+    },
+    "business_changes": {
+      "inserted": 1,
+      "updated": 1,
+      "deleted_logically": 1
+    }
+  },
+  "replay": {
+    "delta": {
+      "inserted_rows": 0,
+      "updated_rows": 0,
+      "deleted_rows": 0,
+      "duration_seconds": 7.652
+    },
+    "business_changes": {
+      "inserted": 0,
+      "updated": 0,
+      "deleted_logically": 0
+    }
+  },
+  "stale_insert": {
+    "delta": {
+      "inserted_rows": 0,
+      "updated_rows": 0,
+      "deleted_rows": 0,
+      "duration_seconds": 5.605
+    },
+    "business_changes": {
+      "inserted": 0,
+      "updated": 0,
+      "deleted_logically": 0
+    }
+  },
+  "state_before": [
+    {
+      "transaction_id": 990001,
+      "payment_id": 1001,
+      "amount": "100.00",
+      "sequence_num": 1,
+      "_is_deleted": false,
+      "_applied_at": "2026-01-01 08:00:00"
+    },
+    {
+      "transaction_id": 990002,
+      "payment_id": 1002,
+      "amount": "50.00",
+      "sequence_num": 1,
+      "_is_deleted": false,
+      "_applied_at": "2026-01-01 08:00:00"
+    },
+    {
+      "transaction_id": 990003,
+      "payment_id": 1003,
+      "amount": "30.00",
+      "sequence_num": 1,
+      "_is_deleted": false,
+      "_applied_at": "2026-01-01 08:00:00"
+    }
+  ],
+  "state_after": [
+    {
+      "transaction_id": 990001,
+      "payment_id": 1001,
+      "amount": "120.00",
+      "sequence_num": 3,
+      "_is_deleted": false,
+      "_applied_at": "2026-10-06 12:24:46.984071"
+    },
+    {
+      "transaction_id": 990002,
+      "payment_id": 1002,
+      "amount": "50.00",
+      "sequence_num": 2,
+      "_is_deleted": true,
+      "_applied_at": "2026-10-06 12:24:46.984071"
+    },
+    {
+      "transaction_id": 990003,
+      "payment_id": 1003,
+      "amount": "30.00",
+      "sequence_num": 1,
+      "_is_deleted": false,
+      "_applied_at": "2026-01-01 08:00:00"
+    },
+    {
+      "transaction_id": 990004,
+      "payment_id": 1004,
+      "amount": "40.00",
+      "sequence_num": 1,
+      "_is_deleted": false,
+      "_applied_at": "2026-10-06 12:24:46.984071"
+    }
+  ],
+  "gold_before": {
+    "transaction_count": 3,
+    "total_amount": "180.00"
+  },
+  "gold_after": {
+    "transaction_count": 3,
+    "total_amount": "190.00"
+  },
+  "checks": {
+    "control_unchanged": true,
+    "replay_unchanged": true,
+    "stale_insert_blocked": true,
+    "conflict_rejected_before_write": true
+  },
+  "run_url": "https://8259550801519022.2.gcp.databricks.com/?o=8259550801519022#job/816895683065285/run/2749618451552",
+  "executed_at_utc": "2026-10-06T12:25:47.1514652Z",
+  "code_sha256": "06a144d0bd294fb78c0ae66ac488ec08721bbe40049ca748debf11c2750533a8"
+}
