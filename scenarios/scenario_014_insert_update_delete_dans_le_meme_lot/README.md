@@ -200,7 +200,7 @@ Les durées mesurent l'appel MERGE sur quatre clés au maximum, hors préparatio
 
 ## Exécution
 
-Depuis la racine du dépôt, avec le profil DEV connecté :
+Depuis la racine du dépôt, avec le profil DEV connecté à `ad.khaffaji@gmail.com`. Le lanceur vérifie le compte avant d'importer le notebook :
 
 ```powershell
 .\scenarios\scenario_014_insert_update_delete_dans_le_meme_lot\generate_mixed_cdc_batch.ps1 -Profile DEV

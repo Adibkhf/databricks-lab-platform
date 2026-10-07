@@ -11,6 +11,9 @@ New-Item -ItemType Directory -Path $runFolder -Force | Out-Null
 $userJson = databricks current-user me -p $Profile --output json
 if ($LASTEXITCODE -ne 0) { throw 'Connexion Databricks impossible.' }
 $userName = ($userJson | ConvertFrom-Json).userName
+if ($userName -ne 'ad.khaffaji@gmail.com') {
+    throw "Compte Databricks inattendu : $userName. Utiliser ad.khaffaji@gmail.com."
+}
 $notebookPath = "/Workspace/Users/$userName/scenario_014_cdc_mixed_$stamp"
 $pythonPath = Join-Path $scenarioFolder 'apply_mixed_cdc.py'
 $notebookFile = Join-Path $runFolder 'notebook.py'
