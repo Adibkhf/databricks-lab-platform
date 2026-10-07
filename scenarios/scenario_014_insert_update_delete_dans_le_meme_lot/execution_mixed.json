@@ -14,13 +14,13 @@
     "inserted_rows": 1,
     "updated_rows": 2,
     "deleted_rows": 1,
-    "duration_seconds": 11.125
+    "duration_seconds": 8.228
   },
   "physical_old_insert": {
     "inserted_rows": 1,
     "updated_rows": 0,
     "deleted_rows": 0,
-    "duration_seconds": 5.059
+    "duration_seconds": 4.214
   },
   "wrong_state": [
     {
@@ -29,7 +29,7 @@
       "amount": "120.00",
       "sequence_num": 3,
       "_is_deleted": false,
-      "_applied_at": "2026-10-06 12:24:12.396107"
+      "_applied_at": "2026-10-07 08:11:38.341776"
     },
     {
       "transaction_id": 990002,
@@ -37,7 +37,7 @@
       "amount": "50.00",
       "sequence_num": 1,
       "_is_deleted": false,
-      "_applied_at": "2026-10-06 12:24:28.817667"
+      "_applied_at": "2026-10-07 08:11:51.179273"
     },
     {
       "transaction_id": 990003,
@@ -45,7 +45,7 @@
       "amount": "30.00",
       "sequence_num": 1,
       "_is_deleted": false,
-      "_applied_at": "2026-10-06 12:24:12.396107"
+      "_applied_at": "2026-10-07 08:11:38.341776"
     },
     {
       "transaction_id": 990004,
@@ -53,7 +53,7 @@
       "amount": "40.00",
       "sequence_num": 1,
       "_is_deleted": false,
-      "_applied_at": "2026-10-06 12:24:12.396107"
+      "_applied_at": "2026-10-07 08:11:38.341776"
     }
   ],
   "wrong_gold": {
@@ -65,7 +65,7 @@
       "inserted_rows": 1,
       "updated_rows": 2,
       "deleted_rows": 0,
-      "duration_seconds": 6.709
+      "duration_seconds": 5.891
     },
     "business_changes": {
       "inserted": 1,
@@ -78,7 +78,7 @@
       "inserted_rows": 0,
       "updated_rows": 0,
       "deleted_rows": 0,
-      "duration_seconds": 7.652
+      "duration_seconds": 4.964
     },
     "business_changes": {
       "inserted": 0,
@@ -91,7 +91,7 @@
       "inserted_rows": 0,
       "updated_rows": 0,
       "deleted_rows": 0,
-      "duration_seconds": 5.605
+      "duration_seconds": 5.234
     },
     "business_changes": {
       "inserted": 0,
@@ -132,7 +132,7 @@
       "amount": "120.00",
       "sequence_num": 3,
       "_is_deleted": false,
-      "_applied_at": "2026-10-06 12:24:46.984071"
+      "_applied_at": "2026-10-07 08:12:06.867814"
     },
     {
       "transaction_id": 990002,
@@ -140,7 +140,7 @@
       "amount": "50.00",
       "sequence_num": 2,
       "_is_deleted": true,
-      "_applied_at": "2026-10-06 12:24:46.984071"
+      "_applied_at": "2026-10-07 08:12:06.867814"
     },
     {
       "transaction_id": 990003,
@@ -156,7 +156,7 @@
       "amount": "40.00",
       "sequence_num": 1,
       "_is_deleted": false,
-      "_applied_at": "2026-10-06 12:24:46.984071"
+      "_applied_at": "2026-10-07 08:12:06.867814"
     }
   ],
   "gold_before": {
@@ -173,7 +173,7 @@
     "stale_insert_blocked": true,
     "conflict_rejected_before_write": true
   },
-  "run_url": "https://8259550801519022.2.gcp.databricks.com/?o=8259550801519022#job/816895683065285/run/2749618451552",
-  "executed_at_utc": "2026-10-06T12:25:47.1514652Z",
-  "code_sha256": "06a144d0bd294fb78c0ae66ac488ec08721bbe40049ca748debf11c2750533a8"
+  "run_url": "https://8259550801519022.2.gcp.databricks.com/?o=8259550801519022#job/244718600553768/run/591183080431523",
+  "executed_at_utc": "2026-10-07T08:13:03.0681949Z",
+  "code_sha256": "aea58637e96be143a6c0c51d4af3518b9b49a3730fb8749a51a8331dca963850"
 }

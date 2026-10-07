@@ -126,7 +126,7 @@ Pour une clé absente, une image INSERT ou UPDATE est insérée. Un DELETE sans 
 
 ## Premier passage
 
-Exécution validée sur Databricks serverless le 6 octobre 2026.
+Exécution validée sur Databricks serverless le 7 octobre 2026.
 
 | transaction_id | amount | sequence_num | _is_deleted | Résultat |
 |---|---:|---:|---|---|
@@ -148,7 +148,7 @@ Le DELETE logique met à jour une ligne Delta : il compte donc parmi les deux UP
 État Silver : 4 clés, dont 1 supprimée logiquement
 Vue courante : 3 transactions actives
 Gold : 180 + 20 - 50 + 40 = 190,00
-Durée du MERGE : 6,709 s
+Durée du MERGE : 5,891 s
 ```
 
 Le nombre de transactions actives reste à trois, malgré trois changements métier. Un simple contrôle du nombre de lignes ne suffit pas à vérifier le résultat.
@@ -164,7 +164,7 @@ Le même lot est rejoué, puis l'ancien INSERT de `990002` est présenté seul, 
 | Lignes supprimées physiquement | 0 | 0 | 0 |
 | Transactions actives | 3 | 3 | 3 |
 | Montant Gold | 190,00 | 190,00 | 190,00 |
-| Durée du MERGE | 6,709 s | 7,652 s | 5,605 s |
+| Durée du MERGE | 5,891 s | 4,964 s | 5,234 s |
 
 Au replay, chaque version source est inférieure ou égale à celle stockée. Aucune ligne ne change, y compris `_applied_at`.
 
@@ -214,5 +214,5 @@ Chaque exécution prépare de nouveau les tables de l'exercice. La baseline est 
 - [generate_mixed_cdc_batch.ps1](./generate_mixed_cdc_batch.ps1) : exécution Databricks et récupération des résultats.
 - [validate_mixed_cdc.sql](./validate_mixed_cdc.sql) : contrôles de la source, de l'état Silver, de la vue courante, de Gold et des métriques Delta.
 - [execution_mixed.json](./execution_mixed.json) : résultats mesurés, snapshots et empreinte du code exécuté.
-- [Run Databricks](https://8259550801519022.2.gcp.databricks.com/?o=8259550801519022#job/816895683065285/run/2749618451552) : exécution utilisée pour les résultats ci-dessus.
+- [Run Databricks](https://8259550801519022.2.gcp.databricks.com/?o=8259550801519022#job/244718600553768/run/591183080431523) : exécution utilisée pour les résultats ci-dessus.
 - [MERGE Delta](https://docs.databricks.com/gcp/en/delta/merge) : comportement des clauses et conditions.
