@@ -1,0 +1,2137 @@
+[
+  {
+    "number": 1,
+    "slug": "scenario_001_auto_loader_incremental",
+    "category": "ingestion",
+    "title": {
+      "fr": "Auto Loader : ingestion incrémentale",
+      "en": "Auto Loader: incremental ingestion"
+    },
+    "summary": {
+      "fr": "Ajouter deux commandes dans un nouveau fichier et vérifier que les anciens fichiers ne sont pas relus.",
+      "en": "Add two orders in a new file and verify that older files are not ingested again."
+    },
+    "problem": {
+      "fr": "Une relance pourrait dupliquer les anciennes données si la progression des fichiers était perdue.",
+      "en": "A restart could duplicate older data if file progress were lost."
+    },
+    "solution": {
+      "fr": "Conserver le checkpoint Auto Loader et contrôler les fichiers réellement ingérés.",
+      "en": "Keep the Auto Loader checkpoint and inspect the files actually ingested."
+    },
+    "result": {
+      "fr": "Résultat documenté : Bronze 50 003 → 50 005 lignes ; 3 → 4 fichiers ; nouveau fichier = 2 lignes.",
+      "en": "Documented result: Bronze 50,003 → 50,005 rows; 3 → 4 files; new file = 2 rows."
+    },
+    "limits": {
+      "fr": "Le test prouve la progression par fichier. Il ne prouve pas la déduplication de clés métier contenues dans des fichiers différents.",
+      "en": "The test proves file-level progress, not business-key deduplication across different files."
+    },
+    "branches": [
+      [
+        "Établir la baseline",
+        "Savoir ce qui existe avant",
+        "Compter lignes et fichiers",
+        "50 003 lignes ; 3 fichiers"
+      ],
+      [
+        "Ajouter un fichier",
+        "Tester uniquement une nouveauté",
+        "Déposer batch_004 avec deux commandes",
+        "2 nouvelles lignes"
+      ],
+      [
+        "Conserver le checkpoint",
+        "Mémoriser les fichiers traités",
+        "Reprendre le même état de progression",
+        "Anciens fichiers non relus"
+      ],
+      [
+        "Tracer la source",
+        "Prouver quelles lignes sont nouvelles",
+        "Contrôler le chemin du fichier",
+        "3 → 4 fichiers sources"
+      ],
+      [
+        "Vérifier la différence",
+        "Éviter un résultat trompeur",
+        "Comparer avant et après",
+        "50 003 + 2 = 50 005"
+      ],
+      [
+        "Délimiter la garantie",
+        "Un nouveau fichier peut répéter une commande",
+        "Séparer progression et unicité métier",
+        "Checkpoint ≠ déduplication métier"
+      ]
+    ],
+    "topics": [
+      {
+        "fr": [
+          "Écart attendu",
+          "Après un dépôt de deux commandes, comment détecter une relecture involontaire ?",
+          "Comparer la baseline et le résultat : seules deux lignes doivent être ajoutées. Vérifier leur fichier source et les fichiers connus par le checkpoint.",
+          "50 003 → 50 005 ; batch_004 contient 2 lignes."
+        ],
+        "en": [
+          "Expected difference",
+          "How do you detect unintended replay after adding two orders?",
+          "Compare baseline and output: only two rows should be added. Check their source file and the files tracked by the checkpoint.",
+          "50,003 → 50,005; batch_004 contains 2 rows."
+        ]
+      },
+      {
+        "fr": [
+          "Progression",
+          "Pourquoi le même chemin de checkpoint doit-il être conservé entre les runs ?",
+          "Il conserve la progression de cette query. Un autre checkpoint démarre avec un autre état et peut considérer les fichiers existants comme non traités.",
+          "Même source + état conservé → seules les nouveautés sont traitées."
+        ],
+        "en": [
+          "Progress",
+          "Why keep the same checkpoint path between runs?",
+          "It retains this query’s progress. A different checkpoint starts with different state and can consider existing files unprocessed.",
+          "Same source + retained state → only new files are processed."
+        ]
+      },
+      {
+        "fr": [
+          "Preuve par fichier",
+          "Le nombre de lignes semble correct. Quelle autre preuve demander ?",
+          "Vérifier les chemins sources et cloud_files_state. Le comptage seul ne montre pas si des anciennes lignes ont été remplacées ou relues.",
+          "Quatre fichiers connus, dont le nouveau fichier de deux lignes."
+        ],
+        "en": [
+          "File evidence",
+          "Row count looks correct. What other evidence do you request?",
+          "Inspect source paths and cloud_files_state. A count alone does not identify the files read.",
+          "Four tracked files, including the new two-row file."
+        ]
+      },
+      {
+        "fr": [
+          "Clé métier",
+          "Une commande déjà connue arrive dans un nouveau fichier. Le checkpoint la bloque-t-il ?",
+          "Non, la nouveauté du fichier ne dit pas si sa commande existe déjà. Il faut une règle métier aval, par exemple un MERGE sur une clé stable.",
+          "Deux fichiers différents contiennent order_id=900001 : cas non testé ici."
+        ],
+        "en": [
+          "Business key",
+          "An existing order arrives in a new file. Does the checkpoint block it?",
+          "No. A new file does not imply a new order. Downstream business logic such as MERGE on a stable key is needed.",
+          "Two different files contain order_id=900001: not tested here."
+        ]
+      },
+      {
+        "fr": [
+          "Fin du run",
+          "Le pipeline termine après avoir lu les fichiers. Est-ce forcément un échec du streaming ?",
+          "Le lecteur partagé utilise AvailableNow : traiter les données disponibles puis terminer est le comportement attendu. Vérifier le statut et les nouveaux fichiers, pas seulement l’arrêt.",
+          "Un run terminé avec les deux nouvelles commandes est attendu."
+        ],
+        "en": [
+          "Run completion",
+          "The pipeline stops after reading the files. Is that necessarily a streaming failure?",
+          "The shared reader uses AvailableNow: processing available data and then stopping is expected. Inspect status and new files, not just termination.",
+          "A completed run containing the two new orders is expected."
+        ]
+      },
+      {
+        "fr": [
+          "Schéma et progression",
+          "Peut-on utiliser le dossier de schéma comme checkpoint ?",
+          "Ce sont deux responsabilités : le schéma décrit les colonnes, le checkpoint garde la progression. Le code définit deux emplacements séparés.",
+          "Nouvelle colonne : schéma ; fichier déjà traité : progression."
+        ],
+        "en": [
+          "Schema and progress",
+          "Can the schema directory replace the checkpoint?",
+          "They have different responsibilities: schema describes columns, checkpoint tracks progress. The code uses separate locations.",
+          "New column: schema; previously processed file: progress."
+        ]
+      },
+      {
+        "fr": [
+          "Traçabilité",
+          "Une équipe affirme que les quatre fichiers ont été réingérés. Comment vérifier ?",
+          "Comparer les lignes par fichier et les états de découverte. Dans le README, les anciens fichiers restent présents sans nouvelle ingestion, tandis que le quatrième ajoute deux lignes.",
+          "Présence dans l’état du checkpoint ≠ relecture dans ce run."
+        ],
+        "en": [
+          "Traceability",
+          "A team claims all four files were ingested again. How do you check?",
+          "Compare rows by source file and discovery state. The README reports older files retained without new ingestion and two rows from the fourth file.",
+          "Presence in checkpoint state does not mean replay in this run."
+        ]
+      },
+      {
+        "fr": [
+          "Limites",
+          "Que peux-tu affirmer à partir de cet exercice ?",
+          "L’ingestion incrémentale fonctionne sur les fichiers testés avec cet état conservé. Une panne partielle, un fichier modifié ou des doublons métier demanderaient des tests distincts.",
+          "Prouvé : +2 lignes. Non prouvé : toutes les stratégies de reprise."
+        ],
+        "en": [
+          "Limits",
+          "What can you claim from this exercise?",
+          "Incremental ingestion works for the tested files with retained state. Partial failure, file changes and business duplicates require separate tests.",
+          "Proven: +2 rows. Not proven: every recovery strategy."
+        ]
+      }
+    ]
+  },
+  {
+    "number": 6,
+    "slug": "scenario_006_schema_evolution",
+    "category": "ingestion",
+    "title": {
+      "fr": "Évolution du schéma Auto Loader et Delta",
+      "en": "Auto Loader and Delta schema evolution"
+    },
+    "summary": {
+      "fr": "Accepter la nouvelle colonne channel dans le lecteur et dans les deux destinations Delta.",
+      "en": "Accept the new channel column in the reader and both Delta destinations."
+    },
+    "problem": {
+      "fr": "Auto Loader détecte une colonne inconnue ; un schéma lecteur évolué ne suffit pas à mettre à jour les tables cibles.",
+      "en": "Auto Loader detects an unknown column; an evolved reader schema does not by itself update target tables."
+    },
+    "solution": {
+      "fr": "addNewColumns et schemaHints côté lecteur ; mergeSchema pour Bronze et quarantaine ; identifiants de transaction pour les retries.",
+      "en": "Reader addNewColumns and schemaHints; mergeSchema on Bronze and quarantine; transaction identifiers for retries."
+    },
+    "result": {
+      "fr": "Incident et correction documentés : channel STRING apparaît dans le schéma Auto Loader et est prévu dans les deux écritures Delta.",
+      "en": "Documented incident and fix: channel STRING appears in the Auto Loader schema and is handled by both Delta writes."
+    },
+    "limits": {
+      "fr": "Les options de retry sont présentes dans le code partagé. Aucun résultat de simulation d’échec entre les deux écritures n’est conservé dans ce dossier.",
+      "en": "Retry options are in shared code. This folder does not retain results from a failure injected between the two writes."
+    },
+    "branches": [
+      [
+        "Détecter la nouveauté",
+        "Le fichier ajoute une colonne",
+        "Observer l’exception et le schéma",
+        "channel STRING"
+      ],
+      [
+        "Faire évoluer le lecteur",
+        "Comprendre la structure source",
+        "addNewColumns + schemaHints",
+        "Schéma enregistré dans schemaLocation"
+      ],
+      [
+        "Faire évoluer Delta",
+        "La table peut avoir un ancien schéma",
+        "mergeSchema sur les écritures",
+        "Bronze et quarantaine acceptent channel"
+      ],
+      [
+        "Séparer les destinations",
+        "Deux commits peuvent réussir différemment",
+        "Inspecter chaque table",
+        "Bronze OK ; quarantaine en erreur : possible"
+      ],
+      [
+        "Préparer le retry",
+        "Éviter de réécrire un batch déjà commité",
+        "txnAppId par destination + batch_id",
+        "Même transaction reconnue"
+      ],
+      [
+        "Vérifier le périmètre",
+        "Présence de code ≠ panne testée",
+        "Contrôler schémas et résultats",
+        "Échec partiel à tester séparément"
+      ]
+    ],
+    "topics": [
+      {
+        "fr": [
+          "Deux schémas",
+          "Auto Loader connaît channel mais l’écriture Delta échoue. Où chercher ?",
+          "Vérifier le schéma de la cible. Le schéma découvert par le lecteur et celui d’une table Delta évoluent séparément ; mergeSchema est activé sur les deux écritures.",
+          "Lecteur : channel STRING ; cible ancienne : channel absente."
+        ],
+        "en": [
+          "Two schemas",
+          "Auto Loader knows channel but the Delta write fails. Where do you look?",
+          "Inspect the target schema. Reader discovery and Delta table evolution are separate; mergeSchema is enabled on both writes.",
+          "Reader: channel STRING; old target: no channel."
+        ]
+      },
+      {
+        "fr": [
+          "Évolution contrôlée",
+          "Une nouvelle colonne fait arrêter le lecteur. Faut-il supprimer le checkpoint ?",
+          "Non. Identifier la nouvelle colonne, vérifier le schéma enregistré et reprendre avec une configuration compatible. Supprimer la progression serait un autre changement avec un risque de replay.",
+          "channel arrive ; le dossier de schéma conserve sa nouvelle définition."
+        ],
+        "en": [
+          "Controlled evolution",
+          "A new column stops the reader. Should you delete its checkpoint?",
+          "No. Identify the column, inspect recorded schema, then resume with compatible settings. Removing progress is a separate change with replay risk.",
+          "channel arrives; schema storage retains its new definition."
+        ]
+      },
+      {
+        "fr": [
+          "Types",
+          "Que prouve schemaHints sur channel ?",
+          "Il exprime le type attendu lors de la lecture. Cela ne valide pas les valeurs métier ni toutes les futures évolutions de type.",
+          "channel STRING accepte mobile ; la liste des canaux autorisés est une autre règle."
+        ],
+        "en": [
+          "Types",
+          "What does schemaHints on channel prove?",
+          "It specifies the expected reading type. It does not validate business values or every future type change.",
+          "channel STRING can hold mobile; allowed channel values are another rule."
+        ]
+      },
+      {
+        "fr": [
+          "Quarantaine",
+          "Pourquoi faire évoluer aussi la table de quarantaine ?",
+          "Une ligne rejetée doit conserver le contenu reçu pour le diagnostic. Si seule Bronze évolue, la seconde écriture peut échouer à cause de la même nouvelle colonne.",
+          "Fichier rejeté avec channel : conserver aussi channel en quarantaine."
+        ],
+        "en": [
+          "Quarantine",
+          "Why evolve the quarantine table too?",
+          "Rejected rows should retain incoming content for diagnosis. Evolving only Bronze can leave the second write failing on the same new column.",
+          "Rejected file with channel: preserve channel in quarantine too."
+        ]
+      },
+      {
+        "fr": [
+          "Échec partiel",
+          "Bronze est commitée et la quarantaine échoue. Le batch est-il atomique ?",
+          "Non. foreachBatch effectue deux écritures distinctes. Il faut reprendre sans dupliquer la destination déjà écrite et terminer celle qui manque.",
+          "Bronze OK ; quarantaine KO : scénario de panne non exercé ici."
+        ],
+        "en": [
+          "Partial failure",
+          "Bronze commits and quarantine fails. Is the batch atomic?",
+          "No. foreachBatch performs separate writes. Recovery must avoid duplicating the completed destination and finish the missing one.",
+          "Bronze OK; quarantine failed: failure scenario not exercised here."
+        ]
+      },
+      {
+        "fr": [
+          "Retry",
+          "Comment le code reconnaît-il une écriture déjà appliquée ?",
+          "Il associe un txnAppId stable à chaque destination et utilise batch_id comme txnVersion. Cela identifie une transaction déjà écrite ; ce n’est pas une déduplication par clé métier.",
+          "Même destination, même application, même batch : transaction déjà connue."
+        ],
+        "en": [
+          "Retry",
+          "How does code recognize an already applied write?",
+          "It assigns a stable txnAppId per destination and uses batch_id as txnVersion. That identifies a previous transaction, not business-key duplicates.",
+          "Same destination, application and batch: known transaction."
+        ]
+      },
+      {
+        "fr": [
+          "Nouvelle progression",
+          "Pourquoi un nouveau checkpoint impose-t-il de revoir les identifiants de transaction ?",
+          "Les batch IDs peuvent repartir de zéro. Réutiliser l’ancienne application avec ces versions peut faire ignorer des écritures considérées comme déjà appliquées. Définir la stratégie de reprise avant de réinitialiser.",
+          "Ancienne application a écrit batch 0 ; nouvelle progression repart à 0."
+        ],
+        "en": [
+          "New progress",
+          "Why review transaction identifiers when using a new checkpoint?",
+          "Batch IDs can restart at zero. Reusing the old application with those versions can skip writes considered already applied. Define recovery before resetting progress.",
+          "Old application wrote batch 0; new progress starts at 0."
+        ]
+      },
+      {
+        "fr": [
+          "Validation",
+          "Quelles preuves présenter sans promettre une reprise globale ?",
+          "Montrer le nouveau schéma, channel dans les deux destinations et les options du code. Distinguer la correction documentée d’un test de panne multi-table non conservé.",
+          "Vérifier channel dans Bronze ET quarantaine, pas seulement printSchema."
+        ],
+        "en": [
+          "Validation",
+          "What evidence can you present without claiming global recovery?",
+          "Show updated schema, channel in both targets and code options. Distinguish the documented fix from an unrecorded multi-table failure test.",
+          "Check channel in Bronze AND quarantine, not just printSchema."
+        ]
+      }
+    ]
+  },
+  {
+    "number": 7,
+    "slug": "scenario_007_file_contract",
+    "category": "ingestion",
+    "title": {
+      "fr": "Contrat de fichier et quarantaine",
+      "en": "File contract and quarantine"
+    },
+    "summary": {
+      "fr": "Router un CSV lisible mais déposé dans un chemin incorrect vers une quarantaine traçable.",
+      "en": "Route a readable CSV with an invalid source path to a traceable quarantine."
+    },
+    "problem": {
+      "fr": "Le chemin ingestion_dt remplace ingestion_date ; la découverte Auto Loader accepte pourtant ce nouveau fichier.",
+      "en": "The path uses ingestion_dt instead of ingestion_date; Auto Loader still discovers the new file."
+    },
+    "solution": {
+      "fr": "Conserver _source_file, contrôler le motif de chemin et séparer Bronze et quarantaine avec un motif de rejet.",
+      "en": "Preserve _source_file, validate its pattern, and split Bronze from quarantine with a rejection reason."
+    },
+    "result": {
+      "fr": "Validation documentée : fichier invalide absent de orders_raw, présent en quarantaine avec INVALID_SOURCE_PATH.",
+      "en": "Documented validation: invalid file absent from orders_raw and present in quarantine with INVALID_SOURCE_PATH."
+    },
+    "limits": {
+      "fr": "Le motif contrôle une forme de chemin, pas la validité calendaire de la date ni toute la qualité du CSV. Les deux destinations sont écrites séparément.",
+      "en": "The pattern checks path shape, not calendar validity or all CSV quality. The two destinations are written separately."
+    },
+    "branches": [
+      [
+        "Découvrir le fichier",
+        "Nouveau ne signifie pas conforme",
+        "Auto Loader repère une nouveauté",
+        "CSV lisible, chemin incorrect"
+      ],
+      [
+        "Garder la provenance",
+        "Expliquer le rejet et préparer un replay",
+        "Conserver le chemin source",
+        "_source_file"
+      ],
+      [
+        "Valider le contrat",
+        "Protéger la Bronze principale",
+        "Contrôler le motif du chemin",
+        "ingestion_date attendu ; ingestion_dt rejeté"
+      ],
+      [
+        "Router sans perdre",
+        "Garder les données non conformes",
+        "Séparer valide et invalide",
+        "Bronze ou quarantaine"
+      ],
+      [
+        "Documenter le rejet",
+        "Permettre un diagnostic précis",
+        "Ajouter une raison explicite",
+        "INVALID_SOURCE_PATH"
+      ],
+      [
+        "Contrôler les limites",
+        "Une regex ne valide pas tout",
+        "Tester contenu et date séparément",
+        "Format correct ≠ date réelle"
+      ]
+    ],
+    "topics": [
+      {
+        "fr": [
+          "Découverte et contrat",
+          "Pourquoi Auto Loader ingère-t-il un CSV placé au mauvais endroit ?",
+          "Il détecte les fichiers nouveaux sous la racine surveillée. Le contrat de landing doit être contrôlé par le pipeline avant l’écriture Bronze.",
+          "ingestion_dt est découvert mais ne respecte pas ingestion_date."
+        ],
+        "en": [
+          "Discovery and contract",
+          "Why does Auto Loader ingest a CSV at the wrong location?",
+          "It discovers new files under the watched root. The pipeline must validate the landing contract before writing Bronze.",
+          "ingestion_dt is discovered but violates ingestion_date."
+        ]
+      },
+      {
+        "fr": [
+          "Provenance",
+          "Comment expliquer précisément le rejet d’une ligne ?",
+          "Conserver le chemin depuis les métadonnées dans _source_file et ajouter _quarantine_reason. L’équipe peut retrouver le fichier et la règle qui a échoué.",
+          "Chemin incorrect + INVALID_SOURCE_PATH."
+        ],
+        "en": [
+          "Provenance",
+          "How do you explain a rejection precisely?",
+          "Preserve metadata path in _source_file and add _quarantine_reason. The team can identify the file and failed rule.",
+          "Invalid path + INVALID_SOURCE_PATH."
+        ]
+      },
+      {
+        "fr": [
+          "Routage",
+          "Comment vérifier que la quarantaine ne devient pas une simple copie de Bronze ?",
+          "Chercher le même fichier dans les deux destinations. Pour le fichier invalide testé, aucune ligne dans orders_raw et des lignes en quarantaine sont attendues.",
+          "Fichier invalide : Bronze non ; quarantaine oui."
+        ],
+        "en": [
+          "Routing",
+          "How do you verify quarantine is not just a copy of Bronze?",
+          "Look for the same file in both targets. The tested invalid file should have no rows in orders_raw and rows in quarantine.",
+          "Invalid file: Bronze no; quarantine yes."
+        ]
+      },
+      {
+        "fr": [
+          "Regex",
+          "Un chemin avec une date impossible peut-il passer ce contrôle ?",
+          "Oui. Le motif vérifie des chiffres au format AAAA-MM-JJ, pas l’existence de la date. Une validation de calendrier demanderait une règle supplémentaire.",
+          "ingestion_date=2026-99-99 respecte la forme numérique, pas le calendrier."
+        ],
+        "en": [
+          "Regex",
+          "Can an impossible date pass this check?",
+          "Yes. The pattern checks digits in YYYY-MM-DD form, not calendar validity. Calendar validation needs another rule.",
+          "ingestion_date=2026-99-99 has the numeric shape, not a valid date."
+        ]
+      },
+      {
+        "fr": [
+          "Qualité",
+          "Un fichier conforme au chemin est-il forcément correct métier ?",
+          "Non. Le contrat de chemin est une condition. Il reste les clés, types, valeurs autorisées et règles de contenu à vérifier.",
+          "orders.csv au bon endroit peut encore contenir un order_id invalide."
+        ],
+        "en": [
+          "Quality",
+          "Does a valid path guarantee valid business data?",
+          "No. Path conformity is one condition. Keys, types, allowed values and content rules still need validation.",
+          "orders.csv at the right location can still contain an invalid order_id."
+        ]
+      },
+      {
+        "fr": [
+          "Replay corrigé",
+          "Le fichier rejeté est corrigé. Le déplacer suffit-il à assurer l’unicité ?",
+          "Un nouveau chemin peut être découvert comme un autre fichier. Définir le replay et l’idempotence aval plutôt que supposer que la quarantaine ou le checkpoint déduplique les commandes.",
+          "Même commande dans un chemin corrigé : contrôler sa clé après replay."
+        ],
+        "en": [
+          "Corrected replay",
+          "A rejected file is corrected. Does moving it ensure uniqueness?",
+          "A new path can be discovered as another file. Define replay and downstream idempotence instead of assuming quarantine or checkpoint deduplicates orders.",
+          "Same order at a corrected path: verify its key after replay."
+        ]
+      },
+      {
+        "fr": [
+          "Deux écritures",
+          "Une destination réussit et l’autre échoue. Que reste-t-il à garantir ?",
+          "La reprise des deux écritures séparées et l’absence de doublons dans la destination déjà commitée. Le code partagé prévoit des identifiants de transaction ; ce test porte sur le routage.",
+          "Bronze commitée avant une erreur de quarantaine : panne non simulée ici."
+        ],
+        "en": [
+          "Two writes",
+          "One destination succeeds and the other fails. What remains to guarantee?",
+          "Recovery of separate writes without duplicates in the committed destination. Shared code has transaction identifiers; this test focuses on routing.",
+          "Bronze commits before a quarantine error: not simulated here."
+        ]
+      },
+      {
+        "fr": [
+          "Preuve",
+          "Quel résultat concret raconter en entretien ?",
+          "Un CSV techniquement valide était accepté avec un mauvais chemin. Après validation du chemin source, le fichier invalide est conservé seulement en quarantaine avec sa raison de rejet.",
+          "Découverte → validation → Bronze ou quarantaine."
+        ],
+        "en": [
+          "Evidence",
+          "What concrete result should you present in an interview?",
+          "A technically valid CSV was accepted at an invalid path. After source-path validation, the invalid file is retained only in quarantine with its reason.",
+          "Discovery → validation → Bronze or quarantine."
+        ]
+      }
+    ]
+  },
+  {
+    "number": 8,
+    "slug": "scenario_008_generate_small_files",
+    "category": "performance",
+    "title": {
+      "fr": "Petits fichiers et coût d’ingestion",
+      "en": "Small files and ingestion cost"
+    },
+    "summary": {
+      "fr": "Comparer 200 petits fichiers à un seul fichier contenant le même nombre de lignes.",
+      "en": "Compare 200 small files with one file containing the same row count."
+    },
+    "problem": {
+      "fr": "Le coût fixe de découverte, ouverture et traitement se répète pour chaque fichier.",
+      "en": "Discovery, opening and processing overhead is repeated for each file."
+    },
+    "solution": {
+      "fr": "Comparer deux lectures isolées, avec schéma explicite, checkpoints et tables séparés.",
+      "en": "Compare isolated reads using explicit schema, separate checkpoints and separate tables."
+    },
+    "result": {
+      "fr": "Mesures du README : 200 lignes dans les deux cas ; 200 fichiers = 27,18 s ; 1 fichier = 8,24 s.",
+      "en": "README measurements: 200 rows in both cases; 200 files = 27.18 s; 1 file = 8.24 s."
+    },
+    "limits": {
+      "fr": "Gain observé sur ce test, pas un facteur universel. Démarrage, cache et environnement influencent les durées.",
+      "en": "Observed improvement in this test, not a universal factor. Startup, cache and environment affect timings."
+    },
+    "branches": [
+      [
+        "Fixer le volume",
+        "Comparer une même quantité métier",
+        "200 lignes dans chaque test",
+        "200 × 1 ligne contre 1 × 200"
+      ],
+      [
+        "Repérer le coût fixe",
+        "Chaque fichier ajoute du travail",
+        "Découverte, ouverture, planification",
+        "Beaucoup de fichiers minuscules"
+      ],
+      [
+        "Isoler les lectures",
+        "Éviter un test déjà consommé",
+        "Tables et checkpoints séparés",
+        "Schéma explicite identique"
+      ],
+      [
+        "Mesurer les sources",
+        "Ne pas confondre RAW et Delta",
+        "Compter les chemins sources",
+        "200 fichiers RAW contre 1"
+      ],
+      [
+        "Comparer les mesures",
+        "Prouver le gain observé",
+        "Même nombre de lignes ingérées",
+        "27,18 s contre 8,24 s"
+      ],
+      [
+        "Garder les limites",
+        "Le résultat dépend du contexte",
+        "Répéter dans des conditions comparables",
+        "3,3 fois sur ce test seulement"
+      ]
+    ],
+    "topics": [
+      {
+        "fr": [
+          "Volume identique",
+          "Pourquoi deux ingestions de 200 lignes peuvent-elles prendre des durées différentes ?",
+          "Le nombre de lignes ne décrit pas le nombre d’ouvertures et de tâches. Beaucoup de fichiers répètent des coûts fixes même si leur contenu total est petit.",
+          "200 fichiers × 1 ligne : 27,18 s ; 1 fichier × 200 : 8,24 s."
+        ],
+        "en": [
+          "Same volume",
+          "Why can two 200-row ingestions take different times?",
+          "Row count does not describe file openings or task overhead. Many files repeat fixed costs despite small total content.",
+          "200 one-row files: 27.18 s; one 200-row file: 8.24 s."
+        ]
+      },
+      {
+        "fr": [
+          "Sources et cible",
+          "numFiles dans Delta vaut 1. Cela prouve-t-il qu’un seul fichier RAW a été lu ?",
+          "Non. numFiles décrit les fichiers physiques de la table Delta. Le nombre de sources vient des chemins conservés dans _source_file.",
+          "200 fichiers RAW peuvent produire un autre nombre de fichiers Delta."
+        ],
+        "en": [
+          "Source and target",
+          "Delta numFiles equals 1. Does that prove one RAW file was read?",
+          "No. numFiles describes physical Delta table files. Source count comes from paths retained in _source_file.",
+          "200 RAW files can produce a different number of Delta files."
+        ]
+      },
+      {
+        "fr": [
+          "Checkpoint du benchmark",
+          "Un replay paraît instantané. Est-ce une preuve d’optimisation ?",
+          "Pas si le checkpoint a déjà consommé les fichiers. Vérifier que chaque test traite réellement son dataset et conserve 200 lignes de résultat.",
+          "Zéro nouvelle ligne peut expliquer un run rapide."
+        ],
+        "en": [
+          "Benchmark checkpoint",
+          "A replay looks instant. Is that evidence of optimization?",
+          "Not if the checkpoint already consumed the files. Verify each test actually processes its dataset and retains 200 result rows.",
+          "Zero new rows can explain a fast run."
+        ]
+      },
+      {
+        "fr": [
+          "Schéma explicite",
+          "Pourquoi le test ne laisse-t-il pas inférer les types ?",
+          "Le code fournit le même schéma pour limiter une différence de travail liée à l’inférence. L’objet de comparaison est surtout la fragmentation en fichiers.",
+          "Même schéma orders dans les deux lecteurs."
+        ],
+        "en": [
+          "Explicit schema",
+          "Why avoid type inference in this benchmark?",
+          "Code supplies the same schema to limit work differences from inference. The comparison focuses on file fragmentation.",
+          "Same orders schema in both readers."
+        ]
+      },
+      {
+        "fr": [
+          "Interprétation du gain",
+          "Peut-on annoncer que compacter sera toujours 3,3 fois plus rapide ?",
+          "Non. Ce facteur décrit deux mesures conservées dans le README. Répéter les tests, contrôler démarrage et cache, puis décrire la dispersion avant de généraliser.",
+          "27,18 / 8,24 ≈ 3,3 pour ces runs."
+        ],
+        "en": [
+          "Gain interpretation",
+          "Can you claim compaction will always be 3.3 times faster?",
+          "No. That factor describes two README measurements. Repeat tests, control startup and cache, and examine variability before generalizing.",
+          "27.18 / 8.24 ≈ 3.3 for these runs."
+        ]
+      },
+      {
+        "fr": [
+          "Compaction aval",
+          "Optimiser les fichiers Delta supprime-t-il le coût de lecture des petits CSV ?",
+          "Cela agit sur les fichiers de la cible, pas sur les ouvertures des fichiers RAW déjà lus. L’exercice compacte le dataset source pour comparer l’ingestion.",
+          "Optimisation Delta et regroupement RAW sont deux leviers distincts."
+        ],
+        "en": [
+          "Downstream compaction",
+          "Does optimizing Delta files remove small CSV reading overhead?",
+          "It changes target files, not openings of RAW files already read. This exercise compacts source data for ingestion comparison.",
+          "Delta optimization and RAW grouping are different controls."
+        ]
+      },
+      {
+        "fr": [
+          "Latence et taille",
+          "Pourquoi ne pas attendre indéfiniment pour fabriquer un fichier énorme ?",
+          "Regrouper les données peut réduire l’overhead, mais attendre augmente la latence de disponibilité. La taille et la fréquence doivent respecter le besoin métier.",
+          "Un fichier toutes les heures peut être trop tard pour un suivi minute par minute."
+        ],
+        "en": [
+          "Latency and size",
+          "Why not wait indefinitely to build a huge file?",
+          "Grouping can reduce overhead, but waiting increases availability latency. Size and cadence must fit business needs.",
+          "An hourly file may be too late for minute-level monitoring."
+        ]
+      },
+      {
+        "fr": [
+          "Validation métier",
+          "Comment vérifier que le gain n’a pas été obtenu en perdant des données ?",
+          "Comparer le nombre de lignes et, pour un test renforcé, les clés et valeurs des deux sorties. Le résultat documenté contient 200 lignes dans chaque table.",
+          "Deux sorties de 200 lignes ; conservation des clés à contrôler aussi."
+        ],
+        "en": [
+          "Business validation",
+          "How do you check that speed did not come from losing data?",
+          "Compare row counts and, for stronger evidence, keys and values in both outputs. Documented results contain 200 rows in each table.",
+          "Two 200-row outputs; key preservation should also be checked."
+        ]
+      }
+    ]
+  },
+  {
+    "number": 10,
+    "slug": "scenario_010_suppression_du_checkpoint_auto_loader",
+    "category": "replay",
+    "title": {
+      "fr": "Perte de checkpoint et replay Bronze",
+      "en": "Checkpoint loss and Bronze replay"
+    },
+    "summary": {
+      "fr": "Observer la relecture de six fichiers, puis reconstruire une Silver unique par commande.",
+      "en": "Observe six files replayed, then rebuild Silver with one row per order."
+    },
+    "problem": {
+      "fr": "La perte de progression fait relire les fichiers ; une écriture append ajoute de nouveau leurs lignes.",
+      "en": "Lost progress causes files to be reread; append writes their rows again."
+    },
+    "solution": {
+      "fr": "Isoler le test, conserver Bronze traçable, sélectionner une ligne par order_id non NULL dans Silver.",
+      "en": "Isolate the test, retain traceable Bronze, and select one row per non-NULL order_id in Silver."
+    },
+    "result": {
+      "fr": "README : Bronze 50 008 → 100 016 ; six fichiers inchangés ; Silver finale 50 006 clés, aucun NULL ni doublon.",
+      "en": "README: Bronze 50,008 → 100,016; same six files; final Silver 50,006 keys, no NULLs or duplicates."
+    },
+    "limits": {
+      "fr": "Le classement utilise l’heure d’ingestion et le chemin, pas une version métier source. Une heure d’arrivée récente ne prouve pas un contenu métier plus récent.",
+      "en": "Ranking uses ingestion time and path, not source business version. Recent arrival does not prove newer business content."
+    },
+    "branches": [
+      [
+        "Isoler la reprise",
+        "Observer la perte sans toucher au pipeline principal",
+        "RAW et checkpoint dédiés",
+        "Six fichiers de référence"
+      ],
+      [
+        "Perdre la progression",
+        "Les anciens fichiers deviennent relisibles",
+        "Retirer l’état du test et relancer",
+        "50 008 → 100 016 lignes Bronze"
+      ],
+      [
+        "Tracer le replay",
+        "Distinguer nouveaux fichiers et copies",
+        "Comparer lignes et chemins",
+        "Toujours six fichiers"
+      ],
+      [
+        "Reconstruire Silver",
+        "Une commande doit rester unique",
+        "ROW_NUMBER par order_id",
+        "50 006 clés retenues"
+      ],
+      [
+        "Traiter les clés NULL",
+        "Un NULL peut survivre au classement",
+        "Exclure les clés invalides",
+        "50 007 avant filtre ; 50 006 après"
+      ],
+      [
+        "Séparer les garanties",
+        "Progression et unicité sont distinctes",
+        "Checkpoint + règle métier aval",
+        "Ordre d’ingestion ≠ version source"
+      ]
+    ],
+    "topics": [
+      {
+        "fr": [
+          "Cause du doublement",
+          "Les fichiers n’ont pas changé, mais Bronze double. Quelle preuve chercher ?",
+          "Vérifier la perte du checkpoint et le mode append. Les six sources sont les mêmes ; leurs 50 008 lignes ont été ajoutées une deuxième fois.",
+          "50 008 + 50 008 = 100 016 ; six fichiers."
+        ],
+        "en": [
+          "Doubling cause",
+          "Files are unchanged, but Bronze doubles. What evidence do you inspect?",
+          "Check checkpoint loss and append writes. The same six sources had their 50,008 rows added again.",
+          "50,008 + 50,008 = 100,016; six files."
+        ]
+      },
+      {
+        "fr": [
+          "Atomicité et métier",
+          "Pourquoi la table Delta n’empêche-t-elle pas ces doublons ?",
+          "Un append valide peut ajouter les mêmes valeurs. Un commit cohérent ne constitue pas une contrainte d’unicité sur order_id.",
+          "Deux commits append peuvent contenir les mêmes commandes."
+        ],
+        "en": [
+          "Atomicity and business",
+          "Why does Delta not prevent these duplicates?",
+          "A valid append can add identical values. A consistent commit is not a uniqueness constraint on order_id.",
+          "Two append commits can contain the same orders."
+        ]
+      },
+      {
+        "fr": [
+          "Surplus de lignes",
+          "Pourquoi le surplus est-il de 50 010 et non 50 008 ?",
+          "Le calcul global inclut le surplus déjà présent dans la baseline. COUNT(DISTINCT) ignore aussi les NULL : inspecter les clés invalides avant de qualifier tout surplus de doublon métier.",
+          "100 016 − 50 006 = 50 010 ; baseline avait déjà un surplus de 2."
+        ],
+        "en": [
+          "Excess rows",
+          "Why is row excess 50,010 rather than 50,008?",
+          "The global calculation includes baseline excess. COUNT(DISTINCT) also ignores NULLs: inspect invalid keys before calling every excess row a business duplicate.",
+          "100,016 − 50,006 = 50,010; baseline already had excess 2."
+        ]
+      },
+      {
+        "fr": [
+          "Clé NULL",
+          "Une Silver classée par clé contient une ligne de trop. Où regarder ?",
+          "ROW_NUMBER crée aussi une partition pour les clés NULL, alors que COUNT(DISTINCT order_id) les ignore. Le SQL exclut explicitement les order_id NULL avant le classement.",
+          "50 007 lignes mais 50 006 clés ; après filtre : 50 006."
+        ],
+        "en": [
+          "NULL key",
+          "A key-ranked Silver contains one extra row. What do you inspect?",
+          "ROW_NUMBER also creates a NULL-key partition, while COUNT(DISTINCT order_id) ignores NULLs. SQL explicitly excludes NULL keys before ranking.",
+          "50,007 rows but 50,006 keys; after filtering: 50,006."
+        ]
+      },
+      {
+        "fr": [
+          "Choix de version",
+          "Le timestamp d’ingestion suffit-il à choisir la dernière version métier ?",
+          "Non. Le scénario utilise ce classement pour dédupliquer le replay de fichiers. Pour des changements CDC hors ordre, il faudrait une version source et une règle de conflit.",
+          "Un ancien état reçu aujourd’hui a un timestamp récent mais un contenu ancien."
+        ],
+        "en": [
+          "Version selection",
+          "Does ingestion timestamp identify the latest business version?",
+          "No. This exercise uses it to deduplicate file replay. Out-of-order CDC changes need source versions and conflict rules.",
+          "An old state arriving today has a recent timestamp but old content."
+        ]
+      },
+      {
+        "fr": [
+          "Checkpoint reconstruit",
+          "Quel contrôle demander au run suivant avec le checkpoint conservé ?",
+          "Vérifier que Bronze ne grossit plus sans nouveau fichier. Le README donne ce contrôle comme attendu après reconstruction ; ne pas le présenter comme une nouvelle mesure de ce portail.",
+          "Attendu : rester à 100 016, pas passer à 150 024."
+        ],
+        "en": [
+          "Rebuilt checkpoint",
+          "What should the next run with retained checkpoint verify?",
+          "Check that Bronze does not grow without new files. The README specifies this expected check after reconstruction; this portal does not claim a new measurement.",
+          "Expected: remain at 100,016, not reach 150,024."
+        ]
+      },
+      {
+        "fr": [
+          "Isolation",
+          "Pourquoi préparer un checkpoint et une cible dédiés ?",
+          "La perte de progression change les volumes et peut déclencher un replay complet. L’exercice isole les objets pour rendre l’incident observable sans altérer le flux principal.",
+          "Checkpoint du scénario et table scenario_010 distincts."
+        ],
+        "en": [
+          "Isolation",
+          "Why use a dedicated checkpoint and target?",
+          "Progress loss changes volumes and can trigger full replay. Dedicated objects make the incident observable without changing the main flow.",
+          "Scenario checkpoint and scenario_010 table are separate."
+        ]
+      },
+      {
+        "fr": [
+          "Preuve aval",
+          "Quelle preuve montre que Silver est réconciliée ?",
+          "Comparer lignes, clés distinctes, NULL et quelques valeurs. Le résultat documenté est 50 006 lignes pour autant de clés, sans NULL ni doublon.",
+          "Silver : lignes = clés distinctes = 50 006."
+        ],
+        "en": [
+          "Downstream proof",
+          "What evidence shows Silver is reconciled?",
+          "Compare rows, distinct keys, NULLs and sampled values. Documented output has 50,006 rows and keys, with no NULLs or duplicates.",
+          "Silver: rows = distinct keys = 50,006."
+        ]
+      }
+    ]
+  },
+  {
+    "number": 11,
+    "slug": "scenario_011_appliquer_uniquement_les_nouveaux_enregistrements",
+    "category": "cdc",
+    "title": {
+      "fr": "CDC INSERT idempotent",
+      "en": "Idempotent INSERT CDC"
+    },
+    "summary": {
+      "fr": "Insérer trois nouvelles commandes, puis rejouer le même lot sans créer de nouvelles lignes.",
+      "en": "Insert three new orders, then replay the same batch without adding rows."
+    },
+    "problem": {
+      "fr": "Un append répéterait les créations lors du replay ; les clés déjà présentes doivent être ignorées.",
+      "en": "Append would repeat creations on replay; existing keys must be ignored."
+    },
+    "solution": {
+      "fr": "MERGE sur order_id avec WHEN NOT MATCHED INSERT, dans une cible de test clonée.",
+      "en": "MERGE on order_id using WHEN NOT MATCHED INSERT in a cloned test target."
+    },
+    "result": {
+      "fr": "README : 50 002 → 50 005 lignes ; premier passage 3 INSERT ; replay 0 INSERT ; une ligne par clé 960001 à 960003.",
+      "en": "README: 50,002 → 50,005 rows; first pass 3 INSERTs; replay 0 INSERTs; one row per key 960001–960003."
+    },
+    "limits": {
+      "fr": "Ce MERGE ignore tout contenu reçu pour une clé présente. Il ne propage ni UPDATE ni DELETE et ne déduplique pas explicitement des créations répétées dans le même lot.",
+      "en": "This MERGE ignores incoming content for existing keys. It handles neither UPDATE nor DELETE and does not explicitly deduplicate repeated creations within one batch."
+    },
+    "branches": [
+      [
+        "Choisir une clé stable",
+        "Reconnaître une commande déjà créée",
+        "Apparier sur order_id",
+        "960001, 960002, 960003"
+      ],
+      [
+        "Préparer une cible de test",
+        "Observer sans changer la Silver principale",
+        "SHALLOW CLONE",
+        "50 002 lignes avant"
+      ],
+      [
+        "Insérer les absentes",
+        "Éviter une création répétée",
+        "WHEN NOT MATCHED INSERT",
+        "Trois nouvelles commandes"
+      ],
+      [
+        "Rejouer le même lot",
+        "Prouver la stabilité métier",
+        "Conserver la cible entre les passages",
+        "3 INSERT puis 0"
+      ],
+      [
+        "Vérifier chaque clé",
+        "Le comptage global ne suffit pas",
+        "Compter les lignes par order_id",
+        "Une ligne pour chaque clé"
+      ],
+      [
+        "Délimiter le contrat",
+        "INSERT seul ne corrige pas un état existant",
+        "Traiter UPDATE/DELETE séparément",
+        "Clé présente : contenu ignoré"
+      ]
+    ],
+    "topics": [
+      {
+        "fr": [
+          "Replay",
+          "Comment prouver que les créations ne se répètent pas ?",
+          "Rejouer exactement le même lot sans réinitialiser la cible. Contrôler les métriques MERGE et une ligne pour chaque clé.",
+          "Premier passage : 3 INSERT ; replay : 0."
+        ],
+        "en": [
+          "Replay",
+          "How do you prove creations are not repeated?",
+          "Replay the same batch without resetting the target. Inspect MERGE metrics and one row per key.",
+          "First pass: 3 INSERTs; replay: 0."
+        ]
+      },
+      {
+        "fr": [
+          "Contenu existant",
+          "Une commande existe mais son statut reçu change. Ce code la met-il à jour ?",
+          "Non. Il ne contient que WHEN NOT MATCHED INSERT. Une clé correspondante ne déclenche aucune modification, même avec un nouveau statut.",
+          "960001 déjà présente : un nouveau statut est ignoré."
+        ],
+        "en": [
+          "Existing content",
+          "An order exists but incoming status changes. Does this code update it?",
+          "No. It only uses WHEN NOT MATCHED INSERT. A matched key triggers no change, even with a new status.",
+          "Existing 960001: a new status is ignored."
+        ]
+      },
+      {
+        "fr": [
+          "Clé correcte",
+          "Quel risque si la jointure MERGE utilise une clé instable ?",
+          "Le même événement peut être vu comme une nouvelle création. Choisir une clé métier stable et contrôler les doublons déjà présents.",
+          "Changer l’identifiant technique à chaque retry ferait de nouvelles clés."
+        ],
+        "en": [
+          "Correct key",
+          "What happens if MERGE uses an unstable key?",
+          "The same event can appear to be a new creation. Use a stable business key and inspect existing duplicates.",
+          "A new technical ID on every retry would create new keys."
+        ]
+      },
+      {
+        "fr": [
+          "Doublon dans le lot",
+          "Deux INSERT identiques d’une clé absente arrivent ensemble. Le replay suffit-il à tester cela ?",
+          "Non. Le replay se produit après la création. Ce code ne normalise pas explicitement deux créations dans un même lot ; un test dédié et une déduplication source sont nécessaires.",
+          "Deux lignes pour une clé encore absente : cas non testé ici."
+        ],
+        "en": [
+          "Duplicate in batch",
+          "Two identical INSERTs for a missing key arrive together. Does replay test that?",
+          "No. Replay occurs after creation. This code does not explicitly normalize duplicates within one batch; a dedicated test and source deduplication are needed.",
+          "Two rows for a still-missing key: not tested here."
+        ]
+      },
+      {
+        "fr": [
+          "Source filtrée",
+          "Pourquoi regarder le filtre operation = INSERT avant le MERGE ?",
+          "Les autres opérations ne font pas partie du traitement. Un DELETE dans Bronze n’est pas appliqué par ce script.",
+          "Source filtrée INSERT ; aucun whenMatchedDelete."
+        ],
+        "en": [
+          "Filtered source",
+          "Why inspect operation = INSERT before MERGE?",
+          "Other operations are outside this processing contract. A DELETE in Bronze is not applied by this script.",
+          "INSERT-filtered source; no whenMatchedDelete."
+        ]
+      },
+      {
+        "fr": [
+          "Cible clonée",
+          "Pourquoi un SHALLOW CLONE ne doit-il pas être présenté comme une copie physique complète ?",
+          "La cible permet des modifications logiques isolées, mais partage initialement des fichiers de données avec sa source. Le choix réduit la copie, pas toutes les dépendances de stockage.",
+          "Table de test distincte ; fichiers initiaux référencés."
+        ],
+        "en": [
+          "Cloned target",
+          "Why is SHALLOW CLONE not a full physical copy?",
+          "The target allows isolated logical changes but initially references source data files. It reduces copying, not all storage dependencies.",
+          "Separate test table; initial files are referenced."
+        ]
+      },
+      {
+        "fr": [
+          "Durées",
+          "Le replay plus rapide prouve-t-il un MERGE performant à grande échelle ?",
+          "Non. Il n’insère aucune ligne et le contexte peut être chaud. Les durées du README décrivent ces deux passages, pas tous les volumes.",
+          "12,82 s avec 3 INSERT ; 2,41 s avec 0 INSERT."
+        ],
+        "en": [
+          "Timings",
+          "Does faster replay prove large-scale MERGE performance?",
+          "No. It inserts nothing and may run in a warm environment. README timings describe those passes, not every volume.",
+          "12.82 s with 3 INSERTs; 2.41 s with 0."
+        ]
+      },
+      {
+        "fr": [
+          "Transition vers UPDATE",
+          "Quelle évolution est nécessaire pour propager un changement de pays ou de statut ?",
+          "Ajouter une action pour les clés correspondantes, sélectionner une version source et contrôler qu’elle est plus récente que la cible. C’est l’objet du scénario suivant.",
+          "Une clé existante demande WHEN MATCHED UPDATE avec une règle de version."
+        ],
+        "en": [
+          "Transition to UPDATE",
+          "What is needed to propagate a country or status change?",
+          "Add a matched-key action, select source versions and verify they are newer than the target. That is the next CDC scenario.",
+          "An existing key needs WHEN MATCHED UPDATE with a version rule."
+        ]
+      }
+    ]
+  },
+  {
+    "number": 12,
+    "slug": "scenario_012_propagation_d_une_mise_a_jour",
+    "category": "cdc",
+    "title": {
+      "fr": "Propagation d’une mise à jour",
+      "en": "Propagating an update"
+    },
+    "summary": {
+      "fr": "Faire évoluer le pays de deux clients existants sans modifier le témoin ni réécrire au replay.",
+      "en": "Update the country of two existing customers without changing the control or rewriting on replay."
+    },
+    "problem": {
+      "fr": "Un MERGE limité aux INSERT ignore les changements sur des clés déjà présentes.",
+      "en": "An INSERT-only MERGE ignores changes to existing keys."
+    },
+    "solution": {
+      "fr": "Sélectionner la dernière version par client puis appliquer WHEN MATCHED UPDATE avec source > cible.",
+      "en": "Select the latest version per customer, then use WHEN MATCHED UPDATE with source > target."
+    },
+    "result": {
+      "fr": "Preuve JSON : 4 événements → 3 clés ; 2 UPDATE puis 0 ; 970001 FR→BE v3, 970002 IT→ES v2, témoin inchangé.",
+      "en": "JSON evidence: 4 events → 3 keys; 2 UPDATEs then 0; 970001 FR→BE v3, 970002 IT→ES v2, unchanged control."
+    },
+    "limits": {
+      "fr": "État courant par client, pas historique SCD2. Le test nominal et le replay ne couvrent pas tous les conflits ou échecs partiels.",
+      "en": "Current customer state, not SCD2 history. Nominal execution and replay do not cover all conflicts or partial failures."
+    },
+    "branches": [
+      [
+        "Identifier le défaut",
+        "La clé existe déjà",
+        "Comparer INSERT seul et UPDATE",
+        "INSERT seul : zéro modification"
+      ],
+      [
+        "Choisir la dernière image",
+        "Plusieurs versions concernent un client",
+        "Classer par version décroissante",
+        "4 événements → 3 clés"
+      ],
+      [
+        "Comparer à la cible",
+        "Empêcher un retour en arrière",
+        "Version source strictement supérieure",
+        "970001 passe en v3"
+      ],
+      [
+        "Mettre à jour le contenu",
+        "Propager le changement réel",
+        "Modifier pays, version et timestamp",
+        "FR→BE ; IT→ES"
+      ],
+      [
+        "Préserver le témoin",
+        "Éviter des écritures inutiles",
+        "Ignorer une version égale",
+        "970003 reste FR v1"
+      ],
+      [
+        "Prouver le replay",
+        "Les événements peuvent être reçus encore",
+        "Comparer états et compteurs Delta",
+        "2 UPDATE puis zéro"
+      ]
+    ],
+    "topics": [
+      {
+        "fr": [
+          "INSERT seul",
+          "Un pays change dans Bronze mais Silver reste ancien. Quelle clause inspecter ?",
+          "Vérifier si le MERGE ne traite que les clés absentes. La reproduction INSERT-only ne modifie aucune ligne, car les clients existent déjà.",
+          "970001 existe : WHEN NOT MATCHED ne propage pas son nouveau pays."
+        ],
+        "en": [
+          "INSERT only",
+          "Country changes in Bronze but Silver stays old. What clause do you inspect?",
+          "Check whether MERGE only handles missing keys. INSERT-only reproduction modifies nothing because customers already exist.",
+          "970001 exists: WHEN NOT MATCHED does not propagate its new country."
+        ]
+      },
+      {
+        "fr": [
+          "Dernière image",
+          "Pourquoi préparer la source avant un UPDATE ?",
+          "Plusieurs versions peuvent viser la même cible. Garder une image complète récente par client évite de laisser l’ordre du lot décider du résultat.",
+          "4 événements, 3 clés retenues."
+        ],
+        "en": [
+          "Latest image",
+          "Why prepare source before UPDATE?",
+          "Several versions can target one row. Keep a recent full image per customer rather than letting batch order decide.",
+          "4 events, 3 selected keys."
+        ]
+      },
+      {
+        "fr": [
+          "Garde de version",
+          "Pourquoi ne pas mettre à jour toutes les clés correspondantes ?",
+          "Une version ancienne pourrait écraser une version récente, et une version égale réécrire inutilement le timestamp. La condition source > cible bloque ces cas.",
+          "970003 v1 face à v1 : témoin inchangé."
+        ],
+        "en": [
+          "Version guard",
+          "Why not update all matching keys?",
+          "An old version could overwrite newer state, and an equal version could rewrite the timestamp unnecessarily. Source > target blocks both.",
+          "970003 v1 against v1: unchanged control."
+        ]
+      },
+      {
+        "fr": [
+          "Résultat",
+          "Quelles valeurs concrètes prouvent la propagation ?",
+          "Comparer pays et versions pour chaque clé, pas seulement compter deux UPDATE. La preuve conserve les snapshots avant et après.",
+          "970001 : FR v1 → BE v3 ; 970002 : IT v1 → ES v2."
+        ],
+        "en": [
+          "Result",
+          "What concrete values prove propagation?",
+          "Compare country and version per key, not just two UPDATEs. Evidence retains before and after snapshots.",
+          "970001: FR v1 → BE v3; 970002: IT v1 → ES v2."
+        ]
+      },
+      {
+        "fr": [
+          "Replay",
+          "Comment vérifier que le même UPDATE est sans effet au deuxième passage ?",
+          "Rejouer sans reset et vérifier zéro ligne modifiée ainsi que les mêmes snapshots, timestamps inclus.",
+          "Premier passage 2 UPDATE ; replay 0."
+        ],
+        "en": [
+          "Replay",
+          "How do you prove the same UPDATE has no effect on replay?",
+          "Replay without reset and verify zero changed rows plus identical snapshots including timestamps.",
+          "First pass 2 UPDATEs; replay 0."
+        ]
+      },
+      {
+        "fr": [
+          "Version et arrivée",
+          "Un événement arrive plus tard avec une version inférieure. Est-il plus récent ?",
+          "Son heure d’arrivée ne change pas la version source. Comparer les versions par clé, indépendamment de l’ordre de réception.",
+          "Cible v3 ; événement reçu ensuite en v2 : ignoré."
+        ],
+        "en": [
+          "Version and arrival",
+          "A later arrival has a lower version. Is it newer?",
+          "Arrival time does not change source version. Compare versions per key independently of arrival order.",
+          "Target v3; later received v2: ignored."
+        ]
+      },
+      {
+        "fr": [
+          "Historique",
+          "Cette table permet-elle de retrouver tous les anciens pays ?",
+          "Non. Le MERGE conserve l’état courant. Un historique SCD2 demanderait des lignes de versions et des périodes de validité distinctes.",
+          "FR est remplacé par BE dans l’état courant de 970001."
+        ],
+        "en": [
+          "History",
+          "Can this table retrieve every previous country?",
+          "No. MERGE stores current state. SCD2 history would need version rows and validity periods.",
+          "FR is replaced by BE in 970001 current state."
+        ]
+      },
+      {
+        "fr": [
+          "Preuve et limites",
+          "Quelles garanties peux-tu défendre ?",
+          "Deux changements ciblés et un replay stable sont mesurés. Les trois clients forment un jeu contrôlé ; cela ne constitue ni un benchmark ni une preuve de toutes les pannes CDC.",
+          "Témoin identique ; code et résultats liés par empreinte dans la preuve JSON."
+        ],
+        "en": [
+          "Evidence and limits",
+          "What guarantees can you defend?",
+          "Two targeted changes and stable replay are measured. Three customers are a controlled dataset, not a benchmark or proof of every CDC failure.",
+          "Identical control; code and results linked by a hash in JSON evidence."
+        ]
+      }
+    ]
+  },
+  {
+    "number": 13,
+    "slug": "scenario_013_propagation_d_une_suppression",
+    "category": "cdc",
+    "title": {
+      "fr": "Propagation d’une suppression",
+      "en": "Propagating a deletion"
+    },
+    "summary": {
+      "fr": "Supprimer un paiement uniquement si le DELETE est plus récent, puis réconcilier Gold et tracer les décisions.",
+      "en": "Delete a payment only if DELETE is newer, then reconcile Gold and audit decisions."
+    },
+    "problem": {
+      "fr": "Une suppression sans comparaison de version retire aussi le paiement déjà plus récent que son DELETE.",
+      "en": "Deletion without version comparison also removes a payment newer than its DELETE."
+    },
+    "solution": {
+      "fr": "WHEN MATCHED DELETE avec source > cible ; recalcul Gold ; audit distinct par tentative.",
+      "en": "WHEN MATCHED DELETE with source > target; Gold recomputation; separate attempt audit."
+    },
+    "result": {
+      "fr": "Preuve JSON : sans garde Gold 30 ; avec garde 1 DELETE, Gold 80 ; replay 0 DELETE. Audit 2 → 4 lignes.",
+      "en": "JSON evidence: unguarded Gold 30; guarded 1 DELETE, Gold 80; replay 0 DELETEs. Audit 2 → 4 rows."
+    },
+    "limits": {
+      "fr": "La suppression est physique et ne protège pas un futur INSERT ancien. Silver, audit et Gold sont écrits séparément.",
+      "en": "Deletion is physical and does not protect against a future stale INSERT. Silver, audit and Gold are separate writes."
+    },
+    "branches": [
+      [
+        "Reproduire le défaut",
+        "DELETE seul ne garantit pas la fraîcheur",
+        "Tester sans garde",
+        "Deux suppressions ; Gold 30"
+      ],
+      [
+        "Comparer les versions",
+        "Protéger un état plus récent",
+        "Source > cible avant DELETE",
+        "980002 v3 garde sa ligne face à DELETE v2"
+      ],
+      [
+        "Supprimer la bonne clé",
+        "Appliquer le DELETE récent",
+        "Effacer 980001 v1 avec DELETE v2",
+        "Une suppression réelle"
+      ],
+      [
+        "Réconcilier Gold",
+        "Un MERGE ne rafraîchit pas une autre table",
+        "Recalculer depuis Silver",
+        "180 → 80"
+      ],
+      [
+        "Rejouer et auditer",
+        "Distinguer état métier et tentatives",
+        "Zéro DELETE ; journaliser les décisions",
+        "Audit 2 → 4 ; métier stable"
+      ],
+      [
+        "Voir la limite",
+        "La version disparaît avec la ligne",
+        "Prévoir une mémoire pour un CDC mixte",
+        "Ancien INSERT : risque à traiter ensuite"
+      ]
+    ],
+    "topics": [
+      {
+        "fr": [
+          "Contrôler la version",
+          "Pourquoi operation = DELETE ne suffit-il pas à autoriser la suppression ?",
+          "L'opération décrit l'intention de la source. Je dois comparer sa version à celle de Silver. Un DELETE v2 sur une cible v3 est ancien : supprimer cette ligne détruirait un état plus récent.",
+          "980001 : DELETE v2 > cible v1 → supprimer.\n980002 : DELETE v2 < cible v3 → conserver."
+        ],
+        "en": [
+          "Check the version",
+          "Why is operation = DELETE insufficient to authorize deletion?",
+          "The operation describes the source intent. I must compare its version against Silver. A v2 DELETE against a v3 target is stale: deleting that row would destroy a newer state.",
+          "980001: DELETE v2 > target v1 → delete.\n980002: DELETE v2 < target v3 → keep."
+        ]
+      },
+      {
+        "fr": [
+          "Reproduire le défaut",
+          "Une suppression sans filtre enlève deux paiements. Comment prouver que l'un est supprimé à tort ?",
+          "Je compare les clés et versions aux états initiaux. Le paiement 980002 porte déjà la version 3 alors que le DELETE porte la version 2. Dans ce test, la suppression sans garde laisse seulement le témoin de 30,00, au lieu des deux paiements attendus pour un total de 80,00.",
+          "Sans garde : 2 DELETE, total Gold 30,00.\nAvec garde : 1 DELETE, total Gold 80,00."
+        ],
+        "en": [
+          "Reproduce the defect",
+          "An unguarded deletion removes two payments. How do you prove one was deleted incorrectly?",
+          "I compare keys and versions against the initial states. Payment 980002 is already at version 3 while its DELETE is version 2. In this test, unguarded deletion leaves only the 30.00 control payment instead of the expected two payments totaling 80.00.",
+          "Without a guard: 2 DELETEs, Gold total 30.00.\nWith a guard: 1 DELETE, Gold total 80.00."
+        ]
+      },
+      {
+        "fr": [
+          "Réconcilier Gold",
+          "Silver contient les bonnes lignes, mais un dashboard affiche encore 180,00. Où regarder ?",
+          "Je vérifie le recalcul Gold et sa dépendance à Silver. Le MERGE Silver ne rafraîchit pas une autre table par lui-même. Ici, le code agrège à nouveau Silver et vérifie deux paiements pour un total exact de 80,00.",
+          "Avant : 100,00 + 50,00 + 30,00 = 180,00.\nAprès : 50,00 + 30,00 = 80,00."
+        ],
+        "en": [
+          "Reconcile Gold",
+          "Silver contains the correct rows, but a dashboard still shows 180.00. Where do you look?",
+          "I check the Gold recomputation and its dependency on Silver. The Silver merge does not refresh another table by itself. Here, the code aggregates Silver again and verifies two payments with an exact total of 80.00.",
+          "Before: 100.00 + 50.00 + 30.00 = 180.00.\nAfter: 50.00 + 30.00 = 80.00."
+        ]
+      },
+      {
+        "fr": [
+          "Rejouer un DELETE",
+          "Le paiement a disparu de Silver. Que doit faire le même DELETE au deuxième passage ?",
+          "La clé ne correspond plus à une ligne cible : aucune suppression n'est appliquée. Ce MERGE n'a pas de clause INSERT. Je vérifie zéro DELETE dans Delta et des snapshots Silver et Gold identiques, sans remise à zéro entre correction et replay.",
+          "delete_001 : DELETED au premier passage.\nMême événement : ALREADY_ABSENT au replay."
+        ],
+        "en": [
+          "Replay a DELETE",
+          "The payment is gone from Silver. What should the same DELETE do on its second pass?",
+          "The key no longer matches a target row, so no deletion is applied. This merge has no INSERT clause. I verify zero DELETEs in Delta and identical Silver and Gold snapshots without resetting between the correction and replay.",
+          "delete_001: DELETED on the first pass.\nSame event: ALREADY_ABSENT on replay."
+        ]
+      },
+      {
+        "fr": [
+          "Tracer les décisions",
+          "L'audit gagne deux lignes au replay. Est-ce incompatible avec l'idempotence ?",
+          "Non : l'état métier Silver et les agrégats Gold restent identiques. L'audit journalise chaque tentative, avec un nom de passage. Il contient deux décisions au premier passage et deux au replay. Il ne faut pas présenter l'ensemble des tables comme inchangé.",
+          "Premier passage : DELETED / IGNORED_VERSION.\nReplay : ALREADY_ABSENT / IGNORED_VERSION.\nAudit : 2 puis 4 lignes ; Silver : toujours 2."
+        ],
+        "en": [
+          "Trace decisions",
+          "The audit gains two rows on replay. Is that incompatible with idempotence?",
+          "No: Silver business state and Gold aggregates remain identical. The audit logs every attempt using a pass name. It contains two decisions on the first pass and two on replay. The whole set of tables must not be described as unchanged.",
+          "First pass: DELETED / IGNORED_VERSION.\nReplay: ALREADY_ABSENT / IGNORED_VERSION.\nAudit: 2 then 4 rows; Silver: still 2."
+        ]
+      },
+      {
+        "fr": [
+          "Limite du DELETE physique",
+          "Un ancien INSERT pourrait-il recréer le paiement après ce DELETE ?",
+          "Oui, un futur traitement qui insère toute clé absente pourrait le recréer. La suppression physique retire aussi la version de Silver. L'audit trace l'événement, mais le MERGE de ce scénario ne consulte pas cet audit pour bloquer des INSERT. Il faut une mémoire des suppressions ou une règle CDC adaptée pour un flux mixte.",
+          "980001 supprimé à v2.\nAncien INSERT v1 reçu ensuite : risque de réapparition.\nCe cas n'est pas exécuté dans le scénario 013."
+        ],
+        "en": [
+          "Physical DELETE limit",
+          "Could an old INSERT recreate the payment after this DELETE?",
+          "Yes, a later process that inserts every absent key could recreate it. Physical deletion also removes the version from Silver. The audit records the event, but this scenario's merge does not consult that audit to block INSERTs. A deletion memory or an appropriate CDC rule is needed for a mixed stream.",
+          "980001 deleted at v2.\nOld INSERT v1 arrives later: reappearance risk.\nThis case is not executed in scenario 013."
+        ]
+      },
+      {
+        "fr": [
+          "Reprise après échec",
+          "Le MERGE Silver réussit, mais Gold échoue. Une seule transaction protège-t-elle l'ensemble ?",
+          "Non. Silver, l'audit et Gold sont écrits séparément dans ce code. Une reprise de production doit identifier les étapes terminées et publier les agrégats cohérents. Le run présenté valide le chemin nominal et le replay ; il ne simule pas cet échec partiel.",
+          "Silver : paiement supprimé.\nGold : ancien total 180,00 tant que le recalcul n'a pas réussi.\nRecalcul attendu : 80,00."
+        ],
+        "en": [
+          "Recover after failure",
+          "The Silver merge succeeds, but Gold fails. Does one transaction protect the whole workflow?",
+          "No. Silver, audit and Gold are written separately in this code. Production recovery must identify completed steps and publish consistent aggregates. The presented run validates the nominal path and replay; it does not simulate this partial failure.",
+          "Silver: payment deleted.\nGold: old total 180.00 until recomputation succeeds.\nExpected recomputed total: 80.00."
+        ]
+      },
+      {
+        "fr": [
+          "Preuves et périmètre",
+          "Quelles preuves présenter en entretien sans généraliser les résultats du labo ?",
+          "Je montre les clés restantes, leurs versions et montants, les compteurs Delta, l'audit et la réconciliation Gold. Le paiement v3 et le témoin gardent leur état complet. Les tables ne contiennent que trois paiements : les durées ne prédisent pas le coût à grande échelle.",
+          "Attendu : 980002 v3 pour 50,00 et 980003 v1 pour 30,00.\nMesuré : 1 DELETE puis 0, Gold total 80,00."
+        ],
+        "en": [
+          "Evidence and scope",
+          "What evidence can you present in an interview without overgeneralizing lab results?",
+          "I show surviving keys, versions and amounts, Delta metrics, audit and Gold reconciliation. The v3 payment and the control keep their complete state. The tables contain only three payments, so durations do not predict large-scale cost.",
+          "Expected: 980002 v3 for 50.00 and 980003 v1 for 30.00.\nMeasured: 1 DELETE then 0, Gold total 80.00."
+        ]
+      }
+    ]
+  },
+  {
+    "number": 14,
+    "slug": "scenario_014_insert_update_delete_dans_le_meme_lot",
+    "category": "cdc",
+    "title": {
+      "fr": "CDC mixte : conserver un état cohérent",
+      "en": "Mixed CDC: maintain consistent state"
+    },
+    "summary": {
+      "fr": "Appliquer INSERT, UPDATE et DELETE avec des doublons et des versions multiples ; empêcher un ancien INSERT de recréer une clé supprimée.",
+      "en": "Apply INSERT, UPDATE and DELETE with duplicates and multiple versions; prevent a stale INSERT from recreating a deleted key."
+    },
+    "problem": {
+      "fr": "Effacer physiquement 990002 retire sa version v2 ; un ancien INSERT v1 peut la recréer et ajouter 50 à Gold.",
+      "en": "Physically deleting 990002 removes its v2 version; a stale v1 INSERT can recreate it and add 50 to Gold."
+    },
+    "solution": {
+      "fr": "Conserver la clé, la version et _is_deleted=true ; comparer source > cible ; lire une vue active pour Gold.",
+      "en": "Keep key, version and _is_deleted=true; compare source > target; read an active view for Gold."
+    },
+    "result": {
+      "fr": "Preuve JSON : 7 événements → 4 clés ; métier 1 INSERT/1 UPDATE/1 DELETE logique ; Gold 180→190. Replay et INSERT ancien : zéro changement.",
+      "en": "JSON evidence: 7 events → 4 keys; business 1 INSERT/1 UPDATE/1 logical DELETE; Gold 180→190. Replay and stale INSERT: zero changes."
+    },
+    "limits": {
+      "fr": "Lot contrôlé, pas requête streaming. La preuve couvre replay et conflit intra-lot ; Gold est écrite séparément.",
+      "en": "Controlled batch, not a streaming query. Evidence covers replay and intra-batch conflict; Gold is a separate write."
+    },
+    "branches": [],
+    "topics": [
+      {
+        "fr": [
+          "Normaliser avant le MERGE",
+          "Un lot contient plusieurs versions et un doublon. Pourquoi ne pas le donner directement au MERGE ?",
+          "Plusieurs événements peuvent viser la même ligne cible. Je vérifie d'abord le contrat de source, retire les copies identiques, puis garde la version la plus récente par clé. Ici, les événements sont des images complètes : seule la dernière est nécessaire pour calculer l'état courant. Avec des deltas partiels, cette sélection pourrait perdre des changements.",
+          "7 événements → 6 versions distinctes → 4 clés.\n990001 : UPDATE v2 = 110 ; UPDATE v3 = 120.\nImage retenue : v3 = 120, pas deux écritures successives."
+        ],
+        "en": [
+          "Normalize before MERGE",
+          "A batch contains several versions and a duplicate. Why not pass it directly to MERGE?",
+          "Several source events may target the same row. I validate the source contract, remove identical copies, then keep the latest version per key. These events carry full images, so the latest image is sufficient for current state. With partial changes, selecting only the latest event could lose updates.",
+          "7 events → 6 distinct versions → 4 keys.\n990001: UPDATE v2 = 110; UPDATE v3 = 120.\nKeep the v3 image = 120, rather than two successive writes."
+        ]
+      },
+      {
+        "fr": [
+          "Refuser une version ambiguë",
+          "Deux événements ont la même clé et la même version, mais des montants différents. Comment choisir ?",
+          "Je ne choisis pas arbitrairement. Une version métier doit désigner un état unique. La normalisation rejette le lot avec AMBIGUOUS_KEY_VERSION avant le MERGE. Le test vérifie que la version Delta, Silver et Gold ne changent pas. Ce contrôle porte sur le lot reçu ; un conflit avec une version déjà appliquée dans un autre lot n'est pas détecté ici.",
+          "990001 v3 : 120,00 et 121,00 dans le même lot.\nRésultat : rejet avant écriture.\nUne copie identique de 120,00 serait simplement dédupliquée."
+        ],
+        "en": [
+          "Reject ambiguous versions",
+          "Two events have the same key and version but different amounts. Which one should win?",
+          "I do not choose arbitrarily. A business version must identify a unique state. Normalization raises AMBIGUOUS_KEY_VERSION before MERGE. The test confirms that the Delta version, Silver and Gold remain unchanged. This validation applies within the incoming batch; it does not detect a conflict against a version already applied from another batch.",
+          "990001 v3: 120.00 and 121.00 in the same batch.\nResult: reject before writing.\nAn identical copy of 120.00 would simply be deduplicated."
+        ]
+      },
+      {
+        "fr": [
+          "Comparer à la cible",
+          "Garder la dernière version du lot suffit-il à empêcher les retours en arrière ?",
+          "Non. La dernière version reçue peut être plus ancienne que celle stockée. La sélection dans le lot et la comparaison à la cible sont deux étapes distinctes. L'appariement utilise transaction_id ; la condition s.sequence_num > t.sequence_num autorise ensuite la modification. sequence_num vient de la source, alors que la version du journal Delta décrit un commit de table.",
+          "Dernière version du lot : v2. Silver : v3.\n2 > 3 est faux → ignorer.\nAu replay : 3 > 3 est faux → conserver aussi _applied_at."
+        ],
+        "en": [
+          "Compare against the target",
+          "Is keeping the latest version in the batch enough to prevent rollback?",
+          "No. The latest incoming version may still be older than the stored state. Batch selection and target comparison are separate steps. Matching uses transaction_id; s.sequence_num > t.sequence_num then authorizes an update. sequence_num comes from the source, while a Delta history version identifies a table commit.",
+          "Latest batch version: v2. Silver: v3.\n2 > 3 is false → ignore.\nOn replay: 3 > 3 is false → preserve _applied_at too."
+        ]
+      },
+      {
+        "fr": [
+          "Garder la mémoire d'une suppression",
+          "Un ancien INSERT recrée une transaction supprimée. Quelle cause chercher ?",
+          "La suppression physique a retiré la clé et sa version. Le MERGE considère alors l'INSERT comme une nouvelle clé. La correction garde une ligne marquée _is_deleted = true avec la version de suppression. L'ancien événement trouve cette cible et échoue à la comparaison de version. La vue courante exclut le marqueur. Il conserve seulement l'état courant de la clé, pas toutes ses anciennes versions.",
+          "Suppression physique : DELETE v2, puis INSERT v1 → clé recréée ; Gold = 240.\nSuppression logique : cible supprimée v2 ; 1 > 2 faux → Gold = 190.\nLa purge des marqueurs doit respecter la fenêtre possible de retards et de replays."
+        ],
+        "en": [
+          "Remember deleted keys",
+          "An old INSERT recreates a deleted transaction. What cause should you investigate?",
+          "Physical deletion removed both the key and its version. MERGE now treats the INSERT as a new key. The fix retains a row with _is_deleted = true and the deletion version. The old event matches that target and fails the version comparison. The current view excludes the marker. It stores the current key state, not every historical version.",
+          "Physical deletion: DELETE v2, then INSERT v1 → key recreated; Gold = 240.\nLogical deletion: deleted target v2; 1 > 2 false → Gold = 190.\nMarker retention must account for possible delays and replays."
+        ]
+      },
+      {
+        "fr": [
+          "Lire les métriques sans confusion",
+          "Le métier attend un DELETE, mais Delta affiche zéro ligne supprimée. Est-ce un échec ?",
+          "Il faut regarder le mode de suppression. Ici, le DELETE modifie le drapeau et la version d'une ligne : Delta compte un UPDATE. Les métriques physiques indiquent une insertion et deux mises à jour ; la comparaison des états métier indique une création, une modification et une suppression logique. Le nom de l'opération source ne suffit pas à interpréter operationMetrics.",
+          "990001 : montant modifié → UPDATE Delta.\n990002 : _is_deleted devient true → UPDATE Delta.\n990004 : nouvelle ligne → INSERT Delta.\nMétier 1/1/1 ; Delta INSERT 1, UPDATE 2, DELETE physique 0."
+        ],
+        "en": [
+          "Interpret metrics correctly",
+          "The business expects a DELETE, but Delta reports zero deleted rows. Did the run fail?",
+          "First check the deletion strategy. Here, DELETE updates a row's flag and version, so Delta counts an UPDATE. Physical metrics show one insertion and two updates; business state comparison shows one creation, one change and one logical deletion. The source operation name alone is insufficient to interpret operationMetrics.",
+          "990001: changed amount → Delta UPDATE.\n990002: _is_deleted becomes true → Delta UPDATE.\n990004: new row → Delta INSERT.\nBusiness 1/1/1; Delta INSERT 1, UPDATE 2, physical DELETE 0."
+        ]
+      },
+      {
+        "fr": [
+          "Prouver le replay et le résultat métier",
+          "Le nombre de transactions actives reste à trois. Comment prouver que le lot a été correctement appliqué ?",
+          "Je compare les clés, montants, versions et timestamps de l'état complet, puis les agrégats de la vue active. Le témoin doit rester identique. Je rejoue le lot sans reset et présente ensuite l'ancien INSERT seul : les deux passages produisent zéro changement de ligne. Gold est réécrite par le code ; l'idempotence vérifiée concerne ses valeurs, pas l'absence de nouveaux commits Gold.",
+          "Avant : 100 + 50 + 30 = 180 ; 3 actives.\nAprès : 120 + 30 + 40 = 190 ; toujours 3 actives.\nReplay et INSERT ancien : mêmes snapshots Silver, mêmes valeurs Gold, métriques MERGE nulles."
+        ],
+        "en": [
+          "Prove replay and business results",
+          "The active transaction count remains three. How do you prove that the batch was applied correctly?",
+          "I compare keys, amounts, versions and timestamps across complete state snapshots, then the aggregates from the active view. The control row must remain identical. I replay without resetting and then submit the old INSERT alone: both passes change zero rows. The code rewrites Gold; verified idempotence concerns its values, not the absence of new Gold commits.",
+          "Before: 100 + 50 + 30 = 180; 3 active rows.\nAfter: 120 + 30 + 40 = 190; still 3 active rows.\nReplay and stale INSERT: identical Silver snapshots, identical Gold values, zero MERGE row changes."
+        ]
+      },
+      {
+        "fr": [
+          "Définir le contrat des opérations",
+          "Un UPDATE arrive pour une clé absente, ou un INSERT plus récent pour une clé supprimée. Quel comportement choisir ?",
+          "Le contrat retenu traite INSERT et UPDATE comme des images complètes. Une clé absente est insérée ; une image plus récente remet _is_deleted à false. Un DELETE sans cible crée un marqueur pour bloquer une ancienne image future. Ce sont des choix explicites du code, pas des règles universelles. La réactivation et le DELETE sans cible ne sont pas exercés dans le run de ce scénario.",
+          "Prévu par le code : cible supprimée v2 + image INSERT v3 → réactivation.\nPrévu : clé absente + DELETE v2 → marqueur v2.\nTesté : cible supprimée v2 + INSERT v1 → aucune réactivation."
+        ],
+        "en": [
+          "Define operation semantics",
+          "An UPDATE targets a missing key, or a newer INSERT targets a deleted key. What behavior should you choose?",
+          "This contract treats INSERT and UPDATE as full images. A missing key is inserted; a newer image resets _is_deleted to false. A DELETE without a target creates a marker to block older images arriving later. These are explicit code choices, not universal rules. Reactivation and DELETE without a target were not exercised in this scenario's run.",
+          "Code behavior: deleted target v2 + INSERT image v3 → reactivation.\nCode behavior: missing key + DELETE v2 → v2 marker.\nTested: deleted target v2 + INSERT v1 → no reactivation."
+        ]
+      },
+      {
+        "fr": [
+          "Délimiter les garanties",
+          "Silver est correcte, mais Gold reste ancienne après une panne. Le MERGE garantit-il tout le pipeline ?",
+          "Le MERGE est atomique pour la table d'état : contenu, version et drapeau sont écrits ensemble. Le recalcul Gold constitue une autre écriture et peut échouer après le commit Silver. Il faut prévoir une reprise et une réconciliation pour ce cas. Ici, aucun échec partiel ni checkpoint streaming n'est testé : le run traite un lot contrôlé. Les durées sur quatre clés ne prouvent pas une amélioration à grande échelle.",
+          "Panne hypothétique : Silver = état corrigé ; Gold = 180 au lieu de 190.\nRéconciliation attendue : relire la vue active et recalculer Gold.\nRun réel : succès nominal, replay, ancien INSERT et conflit intra-lot ; pas de readStream/foreachBatch."
+        ],
+        "en": [
+          "State the guarantees precisely",
+          "Silver is correct but Gold remains stale after a failure. Does MERGE guarantee the whole pipeline?",
+          "MERGE is atomic for the state table: payload, version and deletion flag are written together. Gold recomputation is a separate write and can fail after Silver commits. Recovery and reconciliation must handle that case. This run tests neither partial failures nor streaming checkpoints: it processes a controlled batch. Timings on four keys do not establish large-scale performance gains.",
+          "Hypothetical failure: Silver = corrected state; Gold = 180 instead of 190.\nExpected reconciliation: reread the active view and rebuild Gold.\nActual run: nominal success, replay, stale INSERT and intra-batch conflict; no readStream/foreachBatch."
+        ]
+      }
+    ]
+  },
+  {
+    "number": 25,
+    "slug": "scenario_025_etat_qui_augmente_sans_borne",
+    "category": "streaming",
+    "title": {
+      "fr": "État streaming sans borne",
+      "en": "Unbounded streaming state"
+    },
+    "summary": {
+      "fr": "Observer la croissance des états par client, puis rendre les anciennes fenêtres évictables.",
+      "en": "Observe per-customer state growth, then make old windows evictable."
+    },
+    "problem": {
+      "fr": "Chaque événement crée une nouvelle clé ; aucune règle ne permet de retirer les états anciens.",
+      "en": "Every event creates a new key; no rule allows old state to be removed."
+    },
+    "solution": {
+      "fr": "Watermark et fenêtres de 10 s ; cardinalité limitée à 1 000 clients ; débit corrigé à 200 événements/s.",
+      "en": "10-second watermark and windows; cardinality limited to 1,000 customers; corrected rate is 200 events/s."
+    },
+    "result": {
+      "fr": "README : états non bornés 275→11 986 ; test borné autour de 2 000–3 000 ; 1 000 états retirés au batch 6.",
+      "en": "README: unbounded state 275→11,986; bounded test around 2,000–3,000; 1,000 states removed in batch 6."
+    },
+    "limits": {
+      "fr": "Le code change aussi le débit 500→200, la cardinalité et les partitions. La comparaison ne mesure pas l’effet isolé du watermark. Sink mémoire synthétique.",
+      "en": "Code also changes rate 500→200, cardinality and partitions. The comparison does not isolate watermark impact. Synthetic memory sink."
+    },
+    "branches": [
+      [
+        "Identifier la croissance",
+        "Une nouvelle clé crée un nouvel état",
+        "Observer cardinalité et rétention",
+        "275 → 11 986 états"
+      ],
+      [
+        "Ajouter des fenêtres",
+        "Donner une fin aux agrégats",
+        "Regrouper par client et fenêtre 10 s",
+        "Anciennes fenêtres peuvent se terminer"
+      ],
+      [
+        "Définir le watermark",
+        "Encadrer les retards acceptés",
+        "Suivre le temps des événements",
+        "Seuil 10 s ; pas minuterie murale"
+      ],
+      [
+        "Prouver l’éviction",
+        "Une mémoire stable ne suffit pas",
+        "Observer les états retirés",
+        "Batch 6 : 1 000 retraits"
+      ],
+      [
+        "Contrôler les facteurs",
+        "La correction change plusieurs variables",
+        "500→200/s ; 1 000 clés ; partitions",
+        "Gain non attribuable au seul watermark"
+      ],
+      [
+        "Délimiter le labo",
+        "Les données tardives influencent le résultat",
+        "Vérifier règles et pertes possibles",
+        "Sink mémoire ; test synthétique"
+      ]
+    ],
+    "topics": [
+      {
+        "fr": [
+          "Cause",
+          "Pourquoi un simple groupBy client fait-il grossir l’état ?",
+          "La source non bornée donne une nouvelle clé à chaque événement et le cumul n’a pas de fin temporelle. Spark doit conserver un compteur pour chaque clé.",
+          "customer_id=value ; nouveaux clients permanents."
+        ],
+        "en": [
+          "Cause",
+          "Why can groupBy customer keep growing state?",
+          "The unbounded source creates a new key for every event and cumulative aggregation has no time boundary. Spark retains a counter for each key.",
+          "customer_id=value; continually new customers."
+        ]
+      },
+      {
+        "fr": [
+          "Fenêtre",
+          "Ajouter un watermark suffit-il à un compteur global par client ?",
+          "Le plan doit permettre de déterminer quand un état est terminé. Le code corrigé regroupe par fenêtre temporelle et client, avec watermark sur le même temps événement.",
+          "Fenêtre 10 s + client ; anciens agrégats deviennent évictables."
+        ],
+        "en": [
+          "Window",
+          "Is a watermark sufficient for a lifetime customer counter?",
+          "The plan must determine when state is complete. Corrected code groups by time window and customer with a watermark on that event time.",
+          "10-second window + customer; old aggregates become evictable."
+        ]
+      },
+      {
+        "fr": [
+          "Temps événement",
+          "Un watermark de dix secondes est-il un délai après l’heure du serveur ?",
+          "Non. Il suit la progression du temps des événements observés. Un stream sans nouveaux événements peut donc ne pas faire avancer son seuil.",
+          "Temps événement le plus récent moins tolérance ; pas horloge murale."
+        ],
+        "en": [
+          "Event time",
+          "Is a ten-second watermark a timer from server time?",
+          "No. It follows progress in observed event time. Without new events, the threshold may not advance.",
+          "Latest observed event time minus tolerance, not wall-clock time."
+        ]
+      },
+      {
+        "fr": [
+          "Preuve d’éviction",
+          "Quelle métrique prouve que des états sont réellement supprimés ?",
+          "numRowsRemoved indique des retraits. Le README rapporte 1 000 retraits au batch 6 ; la seule stabilité de memoryUsedBytes serait insuffisante.",
+          "STATE_REMOVED_ROWS=1000, état autour de 2 000–3 000."
+        ],
+        "en": [
+          "Eviction proof",
+          "Which metric proves that state is actually removed?",
+          "numRowsRemoved measures removals. README reports 1,000 in batch 6; stable memoryUsedBytes alone would be insufficient.",
+          "STATE_REMOVED_ROWS=1000; state around 2,000–3,000."
+        ]
+      },
+      {
+        "fr": [
+          "Comparaison",
+          "Peut-on attribuer toute l’amélioration au watermark ?",
+          "Non. Le code borné passe aussi de 500 à 200 événements/s, limite les clients à 1 000 et configure huit partitions. Il faudrait tenir ces facteurs constants pour isoler un effet.",
+          "Deux débits différents : comparaison illustrative, pas effet causal unique."
+        ],
+        "en": [
+          "Comparison",
+          "Can all improvement be attributed to the watermark?",
+          "No. Bounded code also changes rate from 500 to 200 events/s, limits customers to 1,000 and configures eight partitions. Hold those factors constant to isolate impact.",
+          "Different rates: illustrative comparison, not one isolated causal effect."
+        ]
+      },
+      {
+        "fr": [
+          "Données tardives",
+          "Pourquoi une rétention plus courte peut-elle modifier un résultat métier ?",
+          "Des événements arrivant hors de la tolérance peuvent ne plus être pris en compte. Choisir une politique de retard liée aux données et mesurer les événements exclus.",
+          "Suivre numRowsDroppedByWatermark ; zéro observé ne teste pas tous les retards."
+        ],
+        "en": [
+          "Late data",
+          "Why can shorter retention change business results?",
+          "Events arriving outside tolerated lateness may no longer be included. Choose a data-based lateness policy and measure exclusions.",
+          "Track numRowsDroppedByWatermark; zero observed does not test all delays."
+        ]
+      },
+      {
+        "fr": [
+          "État et mémoire",
+          "Pourquoi 2 000 états ne représentent-ils pas une quantité fixe de mémoire ?",
+          "La taille des clés, valeurs et structures compte aussi. Comparer nombre d’états, mémoire et durée des batches plutôt que convertir directement les lignes en octets.",
+          "Même nombre de clés avec des valeurs plus grandes : plus de mémoire possible."
+        ],
+        "en": [
+          "State and memory",
+          "Why do 2,000 states not imply a fixed memory size?",
+          "Key, value and structure sizes also matter. Compare state count, memory and batch duration rather than directly converting rows to bytes.",
+          "Same key count with larger values can consume more memory."
+        ]
+      },
+      {
+        "fr": [
+          "Cadence",
+          "Le trigger vaut cinq secondes. Que signifie un batch de vingt-trois secondes ?",
+          "La cadence demandée n’impose pas une limite de calcul. Le stream peut prendre du retard ; vérifier aussi les débits et l’accumulation sur plusieurs batches.",
+          "Batch initial documenté : 23 s pour un trigger de 5 s."
+        ],
+        "en": [
+          "Cadence",
+          "Trigger is five seconds. What does a twenty-three-second batch mean?",
+          "Requested cadence does not cap computation time. The stream can fall behind; inspect rates and accumulation across batches too.",
+          "Documented initial batch: 23 s with a 5 s trigger."
+        ]
+      }
+    ]
+  },
+  {
+    "number": 26,
+    "slug": "scenario_026_jointure_sans_contrainte_temporelle",
+    "category": "streaming",
+    "title": {
+      "fr": "Jointure stream-stream bornée",
+      "en": "Bounded stream-stream join"
+    },
+    "summary": {
+      "fr": "Associer commandes et paiements sans conserver indéfiniment les lignes qui pourraient encore matcher.",
+      "en": "Join orders and payments without indefinitely retaining rows that might still match."
+    },
+    "problem": {
+      "fr": "La jointure par clé seule ne permet pas de savoir qu’un match futur est devenu impossible.",
+      "en": "A key-only join cannot determine when a future match becomes impossible."
+    },
+    "solution": {
+      "fr": "Watermarks de 10 s sur les deux entrées et paiement compris entre commande et commande +10 s.",
+      "en": "10-second watermarks on both inputs and payment time between order time and order time +10 s."
+    },
+    "result": {
+      "fr": "README : sans borne 179→5 619 états ; avec borne environ 3 552 ; batch 7 ajoute et retire 850 ; 2 247 matches dans [0,10] s.",
+      "en": "README: unbounded 179→5,619 states; bounded around 3,552; batch 7 adds and removes 850; 2,247 matches within [0,10] s."
+    },
+    "limits": {
+      "fr": "Jointure inner sur sources rate 100 et 70 événements/s, avec sink mémoire. Les non-matches et la reprise d’un sink de production ne sont pas validés.",
+      "en": "Inner join on rate sources of 100 and 70 events/s with a memory sink. Unmatched rows and production sink recovery are not validated."
+    },
+    "branches": [
+      [
+        "Observer l’attente",
+        "Une clé peut matcher dans le futur",
+        "Jointure sur clé seulement",
+        "179 → 5 619 états"
+      ],
+      [
+        "Définir la règle métier",
+        "Tous les paiements ne sont pas admissibles",
+        "Délai paiement-commande entre 0 et 10 s",
+        "Un paiement à +11 s ne matche pas"
+      ],
+      [
+        "Poser les watermarks",
+        "Savoir quand un match est trop tardif",
+        "Suivre les temps des deux streams",
+        "Tolérance 10 s par entrée"
+      ],
+      [
+        "Prouver l’éviction",
+        "Libérer les lignes devenues inutiles",
+        "Mesurer entrants et retraits",
+        "850 mis à jour ; 850 retirés"
+      ],
+      [
+        "Valider les matches",
+        "Un état stable ne prouve pas la justesse",
+        "Contrôler délais et lignes jointes",
+        "2 247 matches ; délai 0 à 10 s"
+      ],
+      [
+        "Délimiter le test",
+        "Inner join ne publie pas les absences",
+        "Tester retards et reprises séparément",
+        "Sources synthétiques ; sink mémoire"
+      ]
+    ],
+    "topics": [
+      {
+        "fr": [
+          "Attente sans fin",
+          "Pourquoi la jointure sur order_id seul garde-t-elle des lignes anciennes ?",
+          "Sans borne, un paiement correspondant peut théoriquement arriver plus tard. Spark ne peut pas considérer la ligne comme définitivement inutilisable.",
+          "Sans borne : 179 → 5 619 états dans le README."
+        ],
+        "en": [
+          "Endless waiting",
+          "Why does an order_id-only join retain old rows?",
+          "Without a bound, a matching payment can theoretically arrive later. Spark cannot classify the row as permanently unusable.",
+          "Unbounded: 179 → 5,619 states in README."
+        ]
+      },
+      {
+        "fr": [
+          "Borne métier",
+          "À quoi sert payment_time ≤ order_time +10 s ?",
+          "Elle définit les matches admissibles et permet de raisonner sur la fin d’attente. Cette règle change aussi le résultat métier ; elle doit être justifiée.",
+          "Paiement à +8 s admissible ; +11 s hors règle."
+        ],
+        "en": [
+          "Business bound",
+          "What does payment_time ≤ order_time +10 s achieve?",
+          "It defines valid matches and enables reasoning about when waiting ends. It also changes business results, so it needs justification.",
+          "Payment at +8 s valid; +11 s outside the rule."
+        ]
+      },
+      {
+        "fr": [
+          "Watermark et borne",
+          "Pourquoi distinguer la tolérance de retard et la plage de jointure ?",
+          "La plage compare les temps métier de deux événements. Le watermark décrit la progression et le retard toléré à l’arrivée. Deux paramètres de dix secondes peuvent donc avoir des rôles différents.",
+          "Paiement tardivement reçu avec délai métier +5 s : notions distinctes."
+        ],
+        "en": [
+          "Watermark and bound",
+          "Why distinguish lateness tolerance from join range?",
+          "The range compares business event times. Watermark tracks progress and tolerated arrival lateness. Two ten-second settings can have different roles.",
+          "Late-arriving payment with business delay +5 s: different concepts."
+        ]
+      },
+      {
+        "fr": [
+          "Équilibre",
+          "Quel signal montre que l’état se stabilise ?",
+          "Observer les états totaux et retirés sur plusieurs batches. Le batch 7 documenté met à jour et retire chacun 850 états, avec un total autour de 3 552.",
+          "Entrées et évictions se compensent dans ce batch."
+        ],
+        "en": [
+          "Balance",
+          "What indicates stabilized state?",
+          "Inspect total and removed state across batches. Documented batch 7 updates and removes 850 states each, around 3,552 total.",
+          "Updates and evictions balance in that batch."
+        ]
+      },
+      {
+        "fr": [
+          "Justesse",
+          "L’état est stable. Comment vérifier que les jointures restent correctes ?",
+          "Contrôler les clés et les différences payment_time-order_time. Le test valide 2 247 matches avec un délai entre zéro et dix secondes.",
+          "min_delay=0 ; max_delay=10 ; PASS."
+        ],
+        "en": [
+          "Correctness",
+          "State is stable. How do you check join correctness?",
+          "Inspect keys and payment_time-order_time differences. The test validates 2,247 matches with delays from zero to ten seconds.",
+          "min_delay=0; max_delay=10; PASS."
+        ]
+      },
+      {
+        "fr": [
+          "Stream lent",
+          "Si les paiements cessent d’arriver, l’état peut-il encore augmenter ?",
+          "Oui. La progression temporelle du stream lent peut retarder l’éviction. Examiner les watermarks des deux entrées et la politique globale ; ne pas conclure à une fuite mémoire uniquement.",
+          "Commandes continuent ; watermark paiement reste en arrière."
+        ],
+        "en": [
+          "Slow stream",
+          "If payments stop arriving, can state grow again?",
+          "Yes. Slow input event-time progress can delay eviction. Inspect both watermarks and global policy instead of immediately diagnosing a memory leak.",
+          "Orders continue; payment watermark lags."
+        ]
+      },
+      {
+        "fr": [
+          "Non-match",
+          "Une commande sans paiement apparaît-elle avec un NULL dans cette sortie ?",
+          "Non, le code utilise inner join. Il produit les correspondances admissibles, pas une liste des commandes impayées. Un autre besoin demanderait une autre jointure et des tests.",
+          "Commande sans match : absente de la sortie inner."
+        ],
+        "en": [
+          "Unmatched rows",
+          "Does an order without payment appear with NULL here?",
+          "No. Code uses inner join. It returns valid matches, not a list of unpaid orders. Another requirement needs another join and tests.",
+          "Order without a match: absent from inner output."
+        ]
+      },
+      {
+        "fr": [
+          "Sink de test",
+          "Le sink mémoire prouve-t-il une reprise de production ?",
+          "Non. Il sert à observer les résultats et les métriques dans le labo. Une cible durable, ses écritures et ses retries demanderaient une validation distincte.",
+          "memory + queryName : inspection du test, pas garantie de livraison durable."
+        ],
+        "en": [
+          "Test sink",
+          "Does a memory sink prove production recovery?",
+          "No. It supports lab inspection of results and metrics. A durable target and its writes and retries need separate validation.",
+          "memory + queryName: test inspection, not durable delivery guarantees."
+        ]
+      }
+    ]
+  },
+  {
+    "number": 28,
+    "slug": "scenario_028_transformation_trop_lente",
+    "category": "performance",
+    "title": {
+      "fr": "Transformation lente et backlog",
+      "en": "Slow transformation and backlog"
+    },
+    "summary": {
+      "fr": "Remplacer une UDF Python ralentie par une expression native équivalente et observer les micro-batches.",
+      "en": "Replace an artificially slowed Python UDF with an equivalent native expression and observe micro-batches."
+    },
+    "problem": {
+      "fr": "Le traitement reste autour de 380 lignes/s alors que la source produit 500 ; les batches grossissent et durent plus longtemps.",
+      "en": "Processing stays around 380 rows/s against 500 arriving rows/s; batches grow and take longer."
+    },
+    "solution": {
+      "fr": "Remplacer la transformation avec pause de 10 ms par transaction_id ×2 en expression Spark native.",
+      "en": "Replace the transformation with a 10 ms pause by native Spark transaction_id ×2."
+    },
+    "result": {
+      "fr": "Trace conservée : avant batches 13,19→52,60 s ; après environ 0,7–1,1 s, avec 2 500 lignes par batch stable.",
+      "en": "Retained trace: before 13.19→52.60 s batches; after roughly 0.7–1.1 s, with 2,500 rows per stable batch."
+    },
+    "limits": {
+      "fr": "La pause artificielle est retirée en même temps que l’UDF. Le test ne mesure pas l’effet pur Python/native ni tous les coûts d’une cible durable.",
+      "en": "The artificial pause is removed together with the UDF. The test does not isolate Python/native overhead or durable-target costs."
+    },
+    "branches": [
+      [
+        "Repérer le déséquilibre",
+        "La source avance plus vite que le calcul",
+        "Comparer arrivée et traitement",
+        "500/s en entrée ; environ 380/s traités"
+      ],
+      [
+        "Suivre l’accumulation",
+        "Le travail en attente grossit",
+        "Observer plusieurs vrais batches",
+        "13,19 → 52,60 s"
+      ],
+      [
+        "Identifier le coût",
+        "Pause artificielle à chaque ligne",
+        "Inspecter la transformation Python",
+        "10 ms de pause ; valeur ×2"
+      ],
+      [
+        "Garder la logique métier",
+        "Optimiser sans changer les valeurs",
+        "Utiliser une expression Spark native",
+        "transaction_id ×2"
+      ],
+      [
+        "Vérifier la cadence",
+        "Terminer avant la prochaine échéance",
+        "Comparer durée et trigger 5 s",
+        "Environ 2 500 lignes ; 0,7–1,1 s"
+      ],
+      [
+        "Délimiter le gain",
+        "Plusieurs coûts ont été retirés",
+        "Comparer valeurs et conditions",
+        "Pause + UDF retirées ; sink mémoire"
+      ]
+    ],
+    "topics": [
+      {
+        "fr": [
+          "Diagnostic",
+          "Pourquoi le backlog augmente-t-il même si le stream ne plante pas ?",
+          "La source ajoute les données plus vite que le traitement les consomme. Les logs montrent environ 500 lignes/s entrantes contre 380 traitées ; la file de travail grossit.",
+          "Batch 1 : 6 721 lignes ; batch 5 : 20 437."
+        ],
+        "en": [
+          "Diagnosis",
+          "Why does backlog grow even without crashes?",
+          "Source adds data faster than processing consumes it. Logs show roughly 500 incoming rows/s versus 380 processed, so pending work grows.",
+          "Batch 1: 6,721 rows; batch 5: 20,437."
+        ]
+      },
+      {
+        "fr": [
+          "Trigger",
+          "Un trigger de cinq secondes garantit-il un résultat toutes les cinq secondes ?",
+          "Non. C’est une cadence demandée. Un batch de cinquante secondes ne finit pas en cinq secondes ; mesurer son temps et la fraîcheur réelle.",
+          "Trigger 5 s ; batch lent 52,60 s."
+        ],
+        "en": [
+          "Trigger",
+          "Does a five-second trigger guarantee output every five seconds?",
+          "No. It requests a cadence. A fifty-second batch does not finish in five seconds; measure runtime and real freshness.",
+          "5 s trigger; slow batch 52.60 s."
+        ]
+      },
+      {
+        "fr": [
+          "Coût de la transformation",
+          "Pourquoi cette UDF ralentit-elle autant ?",
+          "Elle appelle Python et ajoute volontairement une pause de 10 ms par ligne. La correction retire cette pause et remplace l’opération par une expression native.",
+          "slow_transform fait sleep(0.01), puis value ×2."
+        ],
+        "en": [
+          "Transformation cost",
+          "Why is this UDF so slow?",
+          "It calls Python and deliberately sleeps 10 ms per row. The fix removes the pause and uses a native expression.",
+          "slow_transform sleeps 0.01 s, then returns value ×2."
+        ]
+      },
+      {
+        "fr": [
+          "Équivalence",
+          "Que vérifier avant de remplacer l’UDF ?",
+          "Le résultat métier doit être identique pour les valeurs et types concernés. Ici, les deux versions calculent transaction_id ×2 ; vérifier aussi les cas limites si le contrat évolue.",
+          "transaction_id=7 → processed_value=14 dans les deux versions."
+        ],
+        "en": [
+          "Equivalence",
+          "What should be checked before replacing the UDF?",
+          "Business outputs must match for relevant values and types. Both versions compute transaction_id ×2 here; inspect edge cases if the contract changes.",
+          "transaction_id=7 → processed_value=14 in both versions."
+        ]
+      },
+      {
+        "fr": [
+          "Régime stable",
+          "D’où viennent les 2 500 lignes dans les batches optimisés ?",
+          "À 500 événements par seconde sur une cadence de cinq secondes, environ 2 500 événements s’accumulent entre déclenchements en régime stable. Le démarrage peut différer.",
+          "500 ×5 = 2 500 ; premiers batches pas forcément identiques."
+        ],
+        "en": [
+          "Steady state",
+          "Why do optimized batches contain 2,500 rows?",
+          "At 500 events per second and five-second cadence, roughly 2,500 accumulate between triggers in steady state. Startup can differ.",
+          "500 ×5 = 2,500; early batches may differ."
+        ]
+      },
+      {
+        "fr": [
+          "Facteurs",
+          "Peut-on déduire de ce test que toute UDF est aussi lente ?",
+          "Non. Le code retire en même temps une pause artificielle et l’UDF. Il prouve la correction de cet anti-pattern, pas un ratio universel entre Python et expressions natives.",
+          "Pause de 10 ms retirée : facteur majeur du gain."
+        ],
+        "en": [
+          "Factors",
+          "Does this test show every UDF is equally slow?",
+          "No. Code removes an artificial sleep and the UDF together. It proves this anti-pattern fix, not a universal Python/native ratio.",
+          "Removing 10 ms sleep is a major gain factor."
+        ]
+      },
+      {
+        "fr": [
+          "Capacité",
+          "Pourquoi ne pas commencer uniquement par augmenter le cluster ?",
+          "Le code contient un coût évitable pour une opération simple. Corriger puis mesurer permet de dimensionner à partir du travail nécessaire, plutôt que masquer cette pause.",
+          "Multiplier par deux ne nécessite pas une pause par ligne."
+        ],
+        "en": [
+          "Capacity",
+          "Why not begin solely by increasing cluster size?",
+          "Code has avoidable cost for a simple operation. Fixing and measuring helps size necessary work rather than masking the pause.",
+          "Doubling a value does not need a sleep per row."
+        ]
+      },
+      {
+        "fr": [
+          "Preuve",
+          "Quelles preuves étayent le retour à une cadence normale ?",
+          "La trace conservée montre des durées inférieures à cinq secondes, un débit de traitement supérieur à l’arrivée et des batches stables. Le sink mémoire ne valide pas une cible de production.",
+          "Après correction : environ 0,7–1,1 s ; 2 500 lignes par batch stable."
+        ],
+        "en": [
+          "Evidence",
+          "What demonstrates recovery to normal cadence?",
+          "Retained trace shows durations below five seconds, processing faster than arrival and stable batches. A memory sink does not validate a production target.",
+          "After fix: roughly 0.7–1.1 s; 2,500 rows per steady batch."
+        ]
+      }
+    ]
+  }
+]
