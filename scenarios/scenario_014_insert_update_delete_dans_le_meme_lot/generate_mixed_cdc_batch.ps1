@@ -8,6 +8,7 @@ $runFolder = Join-Path $projectFolder "tmp/scenario_014_$stamp"
 New-Item -ItemType Directory -Path $runFolder -Force | Out-Null
 
 # Le notebook reprend le même code que le fichier Python du scénario.
+# Vérifier le compte connecté avant tout import ou lancement.
 $userJson = databricks current-user me -p $Profile --output json
 if ($LASTEXITCODE -ne 0) { throw 'Connexion Databricks impossible.' }
 $userName = ($userJson | ConvertFrom-Json).userName

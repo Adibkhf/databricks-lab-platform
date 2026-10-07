@@ -1,6 +1,6 @@
 -- Scenario 014 - Contrôles après exécution de apply_mixed_cdc.py.
 
--- Sept événements, dont un INSERT en double et deux versions pour 990001.
+-- Bronze conserve les sept événements : la déduplication ne modifie pas la source.
 SELECT * FROM dbx_lab_dev.bronze.scenario_014_transactions_cdc
 ORDER BY transaction_id, sequence_num;
 
@@ -13,6 +13,7 @@ ORDER BY transaction_id;
 SELECT * FROM dbx_lab_dev.silver.scenario_014_transactions_current
 ORDER BY transaction_id;
 
+-- Trois lignes et trois clés distinctes attendues dans la vue active.
 SELECT COUNT(*) AS active_rows, COUNT(DISTINCT transaction_id) AS distinct_transactions
 FROM dbx_lab_dev.silver.scenario_014_transactions_current;
 
